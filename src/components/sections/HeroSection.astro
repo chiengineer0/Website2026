@@ -6,10 +6,11 @@ import { TrackableCtaLink } from '@/components/islands/TrackableCtaLink';
 import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
 ---
 <section class="relative flex min-h-screen items-center overflow-hidden">
-  <div class="absolute inset-0 hidden md:block">
+  <div class="absolute inset-0 hidden overflow-hidden md:block">
     <iframe
-      class="h-full w-full scale-110 blur-[1px]"
-      src="https://www.youtube.com/embed/Pf0p7Q7vwN8?autoplay=1&mute=1&loop=1&playlist=Pf0p7Q7vwN8&controls=0&modestbranding=1&playsinline=1"
+      id="hero-video-iframe"
+      class="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 blur-[1px]"
+      data-video-id="SH3iHu-m7Fo"
       title="Electrical infrastructure background"
       loading="lazy"
       allow="autoplay; encrypted-media"
@@ -53,4 +54,20 @@ import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
       <TrustBadgeStrip />
     </div>
   </div>
+
+  <script is:inline>
+    const hydrateHeroVideo = () => {
+      const iframe = document.getElementById('hero-video-iframe');
+      if (!(iframe instanceof HTMLIFrameElement)) return;
+
+      const videoId = iframe.dataset.videoId;
+      if (!videoId) return;
+
+      const randomStart = Math.floor(45 + Math.random() * 210);
+      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&playsinline=1&rel=0&start=${randomStart}`;
+    };
+
+    hydrateHeroVideo();
+    document.addEventListener('astro:page-load', hydrateHeroVideo);
+  </script>
 </section>
