@@ -8,7 +8,6 @@ import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import MobileBottomNav from '@/components/layout/MobileBottomNav.astro';
 import { EmergencyFab } from '@/components/islands/EmergencyFab';
-import { PagefindSearch } from '@/components/islands/PagefindSearch';
 import { InstallPromptBanner } from '@/components/islands/InstallPromptBanner';
 import { LoadingScreen } from '@/components/islands/LoadingScreen';
 import { ClientRouter } from 'astro:transitions';
@@ -50,7 +49,6 @@ const businessSchema = {
   <body class="mobile-bottom-safe">
     <LoadingScreen client:load />
     <Header />
-    <PagefindSearch client:load />
     <main data-pagefind-body>
       <slot />
     </main>

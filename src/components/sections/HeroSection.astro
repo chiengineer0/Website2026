@@ -1,9 +1,4 @@
 ---
-import { HeroTypewriter } from '@/components/islands/HeroTypewriter';
-import { SparkCanvas } from '@/components/islands/SparkCanvas';
-import { SmartPrimaryCta } from '@/components/islands/SmartPrimaryCta';
-import { TrackableCtaLink } from '@/components/islands/TrackableCtaLink';
-import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
 ---
 <section class="relative flex min-h-screen items-center overflow-hidden">
   <div class="absolute inset-0 overflow-hidden">
@@ -20,42 +15,10 @@ import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
   </div>
   <div class="hero-overlay absolute inset-0"></div>
   <div class="hero-edge-vignette absolute inset-0"></div>
-  <SparkCanvas client:load />
 
   <div class="container-shell relative z-20 py-20">
-    <div class="inline-flex rounded-full border border-white/25 bg-black/40 px-4 py-2 text-xs font-semibold tracking-wide text-white/90">
-      Licensed, Bonded & Insured · 20+ Years Field Experience
-    </div>
-    <div class="mt-5 max-w-4xl">
-      <HeroTypewriter client:load />
-    </div>
-    <p class="mt-5 max-w-2xl text-lg text-white/88">Bold electrical craftsmanship for estates, campuses, retail centers, and mission-critical facilities. Precision planning, immaculate execution, and guaranteed code compliance.</p>
-    <div class="mt-8 flex flex-wrap gap-3">
-      <SmartPrimaryCta client:load />
-      <TrackableCtaLink
-        client:load
-        href="/Website2026/projects/"
-        label="Our Work"
-        eventName="hero_secondary_cta_click"
-        className="glow-hover inline-flex min-h-12 items-center rounded-md border border-white/35 px-6 font-semibold text-white"
-      />
-    </div>
-    <div class="mt-6 flex flex-wrap gap-2 text-xs text-white/75">
-      <span class="rounded-full border border-white/20 px-3 py-1">500+ Completed Projects</span>
-      <span class="rounded-full border border-white/20 px-3 py-1">Commercial + Residential Specialists</span>
-      <span class="rounded-full border border-white/20 px-3 py-1">Fast Emergency Dispatch</span>
-    </div>
-    <div class="mt-16 flex items-center gap-2 text-sm text-white/70">
-      <span class="animate-bounce text-2xl">↓</span>
-      <span>Scroll to explore services</span>
-    </div>
-    <div class="mt-6 max-w-3xl">
-      <TrustBadgeStrip />
-    </div>
-    <p class="mt-4 text-xs text-white/55">
-      If video playback is blocked on your device,
-      <a href="https://www.youtube.com/watch?v=SH3iHu-m7Fo" target="_blank" rel="noreferrer" class="text-white underline underline-offset-2">open the video directly</a>.
-    </p>
+    <h1 class="section-title max-w-4xl font-black">[BRAND NAME] Electric</h1>
+    <p class="mt-4 text-lg text-white/88">Wired for Excellence.</p>
   </div>
 
   <script is:inline>
