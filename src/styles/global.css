@@ -108,7 +108,7 @@ summary:focus-visible {
 }
 
 .hero-overlay {
-  background: linear-gradient(to bottom, rgb(0 0 0 / 40%), rgb(0 0 0 / 80%));
+  background: linear-gradient(to bottom, rgb(0 0 0 / 24%), rgb(0 0 0 / 58%));
 }
 
 .hero-edge-vignette {
