@@ -5,15 +5,16 @@ const services = await getCollection('services');
 ---
 <SiteLayout title="Electrical Services | [BRAND NAME] Electric" description="Panel upgrades, EV charging, rewiring, emergency response, and more.">
   <section class="container-shell py-16">
-    <h1 class="text-4xl font-black">Electrical Services</h1>
+    <h1 class="section-title font-black">Electrical Services</h1>
     <p class="mt-3 max-w-3xl text-white/80">Specialized crews for residential, commercial, and industrial systems with disciplined quality control and code-first execution.</p>
     <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {services.map((service) => (
-        <article class="rounded-xl border border-white/15 bg-white/5 p-5">
+        <article class="surface-card p-5">
+          <span class="rounded-full border border-white/20 px-2 py-1 text-[10px] uppercase tracking-wide text-white/70">{service.data.category}</span>
           <h2 class="text-xl font-semibold">{service.data.title}</h2>
           <p class="mt-2 text-white/80">{service.data.description}</p>
           <p class="mt-3 text-sm text-[var(--color-amber)]">{service.data.timeline} · {service.data.startingPrice}</p>
-          <a href={`/Website2026/services/${service.slug}/`} class="mt-4 inline-block min-h-12 text-[var(--color-electric)]">Learn More →</a>
+          <a href={`/Website2026/services/${service.slug}/`} class="mt-4 inline-flex min-h-12 items-center text-[var(--color-electric)]">Learn More →</a>
         </article>
       ))}
     </div>

@@ -6,10 +6,10 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.publishDate.va
 ---
 <SiteLayout title="Electrical Insights Blog | [BRAND NAME] Electric" description="Electrical safety, code updates, EV charging guidance, and project stories.">
   <section class="container-shell py-16">
-    <h1 class="text-4xl font-black">Electrical Insights</h1>
+    <h1 class="section-title font-black">Electrical Insights</h1>
     <div class="mt-8 grid gap-4 md:grid-cols-2">
       {posts.map((post) => (
-        <article class="rounded-xl border border-white/15 bg-white/5 p-5">
+        <article class="surface-card p-5">
           <p class="text-xs text-white/60">{post.data.publishDate.toLocaleDateString()}</p>
           <h2 class="mt-2 text-xl font-semibold">{post.data.title}</h2>
           <p class="mt-2 text-white/80">{post.data.excerpt}</p>

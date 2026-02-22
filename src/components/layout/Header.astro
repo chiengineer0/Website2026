@@ -1,5 +1,6 @@
 ---
 import { ThemeToggle } from '@/components/islands/ThemeToggle';
+
 const links = [
   { href: '/', label: 'Home' },
   { href: '/services/', label: 'Services' },
@@ -8,15 +9,32 @@ const links = [
   { href: '/blog/', label: 'Blog' },
   { href: '/contact/', label: 'Contact' },
 ];
+
+const currentPath = Astro.url.pathname.replace('/Website2026', '') || '/';
 ---
-<header class="sticky top-0 z-40 border-b border-white/10 bg-black/75 backdrop-blur-sm">
+<header class="sticky top-0 z-40 border-b border-white/10 bg-black/70 backdrop-blur-md">
   <div class="container-shell flex min-h-16 items-center justify-between gap-4">
-    <a href="/Website2026/" class="text-lg font-black tracking-tight">[BRAND NAME] Electric</a>
+    <a href="/Website2026/" class="flex flex-col leading-tight">
+      <span class="text-lg font-black tracking-tight">[BRAND NAME] Electric</span>
+      <span class="text-[11px] uppercase tracking-[0.15em] text-white/60">Wired for Excellence</span>
+    </a>
     <nav aria-label="Primary" class="hidden items-center gap-1 md:flex">
       {links.map((link) => (
-        <a href={`/Website2026${link.href}`} class="glow-hover rounded-md px-3 py-2 text-sm text-white/85 hover:text-white">{link.label}</a>
+        <a
+          href={`/Website2026${link.href}`}
+          class:list={[
+            'glow-hover rounded-md px-3 py-2 text-sm transition',
+            currentPath === link.href ? 'bg-white/10 text-white' : 'text-white/80 hover:text-white',
+          ]}
+          aria-current={currentPath === link.href ? 'page' : undefined}
+        >
+          {link.label}
+        </a>
       ))}
     </nav>
-    <ThemeToggle client:load />
+    <div class="flex items-center gap-2">
+      <a href="tel:+15551239876" class="hidden min-h-12 items-center rounded-md border border-red-300/50 px-3 text-xs font-semibold text-red-200 md:inline-flex">24/7 Emergency</a>
+      <ThemeToggle client:load />
+    </div>
   </div>
 </header>

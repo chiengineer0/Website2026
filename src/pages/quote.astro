@@ -4,8 +4,13 @@ import { QuoteEstimator } from '@/components/islands/QuoteEstimator';
 ---
 <SiteLayout title="Quote Estimator | [BRAND NAME] Electric" description="Interactive multi-step estimator for electrical projects.">
   <section class="container-shell py-16">
-    <h1 class="text-4xl font-black">Interactive Quote Estimator</h1>
+    <h1 class="section-title font-black">Interactive Quote Estimator</h1>
     <p class="mt-3 text-white/80">Build your project profile in minutes. Your progress is saved automatically.</p>
+    <div class="mt-4 flex flex-wrap gap-2 text-xs text-white/70">
+      <span class="rounded-full border border-white/20 px-3 py-1">No-obligation estimate</span>
+      <span class="rounded-full border border-white/20 px-3 py-1">Licensed estimator review</span>
+      <span class="rounded-full border border-white/20 px-3 py-1">Transparent scope + timeline</span>
+    </div>
     <div class="mt-8"><QuoteEstimator client:load /></div>
   </section>
 </SiteLayout>

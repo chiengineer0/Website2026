@@ -9,6 +9,7 @@ export function HeroTypewriter() {
   const [typed, setTyped] = useState('');
 
   useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const target = lines[lineIndex];
     let cursor = 0;
     const interval = window.setInterval(() => {
@@ -21,7 +22,7 @@ export function HeroTypewriter() {
           setLineIndex((current) => (current + 1) % lines.length);
         }, 1400);
       }
-    }, 55);
+    }, reducedMotion ? 20 : 55);
     return () => window.clearInterval(interval);
   }, [lineIndex]);
 

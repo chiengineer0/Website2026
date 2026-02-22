@@ -12,16 +12,22 @@ const { Content } = await render(service);
 ---
 <SiteLayout title={`${service.data.title} | [BRAND NAME] Electric`} description={service.data.description}>
   <article class="container-shell py-16">
-    <a href="/Website2026/services/" class="text-sm text-[var(--color-electric)]">← Back to services</a>
-    <h1 class="mt-4 text-4xl font-black">{service.data.title}</h1>
+    <nav class="text-xs text-white/55" aria-label="Breadcrumbs">
+      <a href="/Website2026/" class="hover:text-white">Home</a> / <a href="/Website2026/services/" class="hover:text-white">Services</a> / <span class="text-white/80">{service.data.title}</span>
+    </nav>
+    <h1 class="section-title mt-4 font-black">{service.data.title}</h1>
     <p class="mt-3 text-white/80">{service.data.description}</p>
-    <div class="mt-6 rounded-xl border border-white/15 bg-white/5 p-5">
-      <p><strong>Timeline:</strong> {service.data.timeline}</p>
-      <p><strong>Investment:</strong> {service.data.startingPrice}</p>
+    <div class="surface-card mt-6 grid gap-3 p-5 sm:grid-cols-3">
+      <p><strong>Timeline:</strong><br />{service.data.timeline}</p>
+      <p><strong>Investment:</strong><br />{service.data.startingPrice}</p>
+      <p><strong>Service Class:</strong><br />{service.data.category}</p>
     </div>
     <div class="prose prose-invert mt-8 max-w-none">
       <Content />
     </div>
-    <a href="/Website2026/quote/" class="mt-8 inline-flex min-h-12 items-center rounded-md bg-[var(--color-amber)] px-6 font-bold text-black">Request This Service</a>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href="/Website2026/quote/" class="inline-flex min-h-12 items-center rounded-md bg-[var(--color-amber)] px-6 font-bold text-black">Request This Service</a>
+      <a href="tel:+15551239876" class="inline-flex min-h-12 items-center rounded-md border border-red-300/50 px-6 font-semibold text-red-200">Emergency Call</a>
+    </div>
   </article>
 </SiteLayout>

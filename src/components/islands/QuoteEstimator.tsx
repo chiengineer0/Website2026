@@ -16,6 +16,7 @@ const steps = ['Project Type', 'Service', 'Property', 'Contact', 'Summary'] as c
 export function QuoteEstimator() {
   const [step, setStep] = useState(0);
   const [data, setData] = useState<Partial<QuoteFormData>>(initialData);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const raw = localStorage.getItem('quote-draft');
@@ -38,12 +39,32 @@ export function QuoteEstimator() {
 
   const completion = ((step + 1) / steps.length) * 100;
 
+  function clearDraft() {
+    localStorage.removeItem('quote-draft');
+    setData(initialData);
+    setStep(0);
+    setErrorMessage('');
+  }
+
   return (
     <section className="rounded-2xl border border-white/15 bg-[var(--color-surface)] p-4 sm:p-8">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap gap-2">
+          {steps.map((label, index) => (
+            <span key={label} className={`rounded-full px-3 py-1 text-xs ${index <= step ? 'bg-[var(--color-electric)]/25 text-white' : 'bg-white/10 text-white/60'}`}>
+              {index + 1}. {label}
+            </span>
+          ))}
+        </div>
+        <button type="button" onClick={clearDraft} className="min-h-12 rounded-md border border-white/25 px-3 text-xs text-white/80 hover:border-white/40">
+          Clear saved draft
+        </button>
+      </div>
       <div className="mb-6 h-2 w-full rounded-full bg-white/10">
         <div className="h-full rounded-full bg-[var(--color-electric)]" style={{ width: `${completion}%` }} />
       </div>
       <p className="text-sm text-white/70">Step {step + 1} of {steps.length}: {steps[step]}</p>
+      {errorMessage ? <p className="mt-2 rounded-md border border-red-300/50 bg-red-900/30 px-3 py-2 text-sm text-red-200">{errorMessage}</p> : null}
 
       <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="mt-4">
         {step === 0 && (
@@ -91,6 +112,12 @@ export function QuoteEstimator() {
             <h3 className="text-xl font-semibold">Estimated Investment Range</h3>
             <p className="mt-2 text-3xl font-black text-[var(--color-amber)]">{estimate}</p>
             <p className="mt-2 text-sm text-white/70">Final proposal follows an onsite assessment by a licensed electrician.</p>
+            <div className="mt-4 grid gap-2 text-sm text-white/75 sm:grid-cols-2">
+              <p><strong>Project Type:</strong> {data.jobType}</p>
+              <p><strong>Service:</strong> {data.serviceCategory}</p>
+              <p><strong>Property Size:</strong> {data.propertySize} sq ft</p>
+              <p><strong>Urgency:</strong> {data.urgency ? 'Expedited' : 'Standard'}</p>
+            </div>
             <form action="https://formspree.io/f/mzzvgjov" method="POST" className="mt-6">
               <input type="hidden" name="payload" value={JSON.stringify(data)} />
               <button type="submit" className="pulse-amber min-h-12 rounded-md bg-[var(--color-amber)] px-6 font-semibold text-black">Submit Request</button>
@@ -106,9 +133,13 @@ export function QuoteEstimator() {
           disabled={step === 4}
           className="min-h-12 rounded-md bg-[var(--color-electric)] px-4 font-semibold text-white disabled:opacity-50"
           onClick={() => {
+            setErrorMessage('');
             if (step === 3) {
               const parsed = quoteSchema.safeParse(data);
-              if (!parsed.success) return;
+              if (!parsed.success) {
+                setErrorMessage('Please complete all contact fields with valid details before continuing.');
+                return;
+              }
             }
             setStep((value) => Math.min(4, value + 1));
           }}

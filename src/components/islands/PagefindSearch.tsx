@@ -19,6 +19,9 @@ export function PagefindSearch() {
         event.preventDefault();
         setOpen((state) => !state);
       }
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
     };
     window.addEventListener('keydown', keyHandler);
     return () => window.removeEventListener('keydown', keyHandler);
@@ -51,13 +54,13 @@ export function PagefindSearch() {
       <button
         type="button"
         aria-label={triggerLabel}
-        className="fixed left-1/2 top-4 z-50 flex min-h-12 -translate-x-1/2 items-center gap-2 rounded-full border border-white/25 bg-black/70 px-4 text-sm text-white"
+        className="fixed left-1/2 top-4 z-50 flex min-h-12 -translate-x-1/2 items-center gap-2 rounded-full border border-white/25 bg-black/70 px-4 text-sm text-white backdrop-blur-sm transition hover:border-[var(--color-electric)]"
         onClick={() => setOpen((state) => !state)}
       >
         <Search size={16} /> CMD + K
       </button>
       {open ? (
-        <div className="fixed inset-0 z-50 bg-black/80 p-4">
+        <div className="fixed inset-0 z-50 bg-black/82 p-4">
           <div className="mx-auto mt-24 w-[min(780px,100%)] rounded-2xl border border-white/15 bg-[var(--color-surface)] p-4">
             <input
               value={query}
@@ -75,6 +78,7 @@ export function PagefindSearch() {
                 </li>
               ))}
             </ul>
+            {query && results.length === 0 ? <p className="mt-4 text-sm text-white/60">No direct matches yet. Try broader terms like panel, EV, emergency, or inspection.</p> : null}
           </div>
         </div>
       ) : null}
