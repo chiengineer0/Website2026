@@ -32,6 +32,9 @@
   <div class="container-shell relative z-20 py-20">
     <h1 class="section-title max-w-4xl font-black">إصلاح الكهرباء</h1>
     <p class="mt-4 text-lg text-white/88">Wired for Excellence.</p>
+    <button id="hero-video-play-mobile" type="button" class="mt-6 inline-flex min-h-12 items-center rounded-md border border-white/30 bg-black/45 px-4 text-sm font-semibold text-white md:hidden">
+      Tap to play background video
+    </button>
   </div>
 
   <script is:inline>
@@ -138,6 +141,43 @@
       };
     };
 
+    const wireMobileTapFallback = () => {
+      const button = document.getElementById('hero-video-play-mobile');
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      const localVideo = document.getElementById('hero-video-local');
+      const isMobile = window.matchMedia('(max-width: 767px)').matches;
+
+      if (!isMobile) {
+        button.classList.add('hidden');
+        return;
+      }
+
+      const hideButton = () => button.classList.add('hidden');
+
+      button.classList.remove('hidden');
+      button.onclick = () => {
+        if (localVideo instanceof HTMLVideoElement) {
+          toggleVisualLayers('local');
+          const playPromise = localVideo.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise
+              .then(() => hideButton())
+              .catch(() => {
+                startYoutubeFallback();
+                hideButton();
+              });
+          } else {
+            hideButton();
+          }
+          return;
+        }
+
+        startYoutubeFallback();
+        hideButton();
+      };
+    };
+
     const startLocalVideo = () => {
       const localVideo = document.getElementById('hero-video-local');
       if (!(localVideo instanceof HTMLVideoElement)) {
@@ -178,6 +218,7 @@
     };
 
     const hydrateHeroVideo = () => {
+      wireMobileTapFallback();
       startLocalVideo();
     };
 
