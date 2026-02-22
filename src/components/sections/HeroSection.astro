@@ -14,7 +14,7 @@ import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
       data-video-id="SH3iHu-m7Fo"
       title="Electrical infrastructure background"
       loading="eager"
-      allow="autoplay; encrypted-media"
+      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
       referrerpolicy="strict-origin-when-cross-origin"
     ></iframe>
   </div>
@@ -59,6 +59,51 @@ import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
   </div>
 
   <script is:inline>
+    let heroPlayer = null;
+
+    const ensureYouTubeApi = () => {
+      if (window.YT?.Player) return Promise.resolve(window.YT);
+
+      return new Promise((resolve) => {
+        const existing = document.querySelector('script[data-youtube-api="true"]');
+        if (!existing) {
+          const script = document.createElement('script');
+          script.src = 'https://www.youtube.com/iframe_api';
+          script.async = true;
+          script.dataset.youtubeApi = 'true';
+          document.head.appendChild(script);
+        }
+
+        const previous = window.onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = () => {
+          if (typeof previous === 'function') previous();
+          resolve(window.YT);
+        };
+      });
+    };
+
+    const forceAutoplay = async (startSeconds) => {
+      const iframe = document.getElementById('hero-video-iframe');
+      if (!(iframe instanceof HTMLIFrameElement)) return;
+
+      const YT = await ensureYouTubeApi();
+      if (!YT?.Player) return;
+
+      if (heroPlayer?.destroy) {
+        heroPlayer.destroy();
+      }
+
+      heroPlayer = new YT.Player(iframe, {
+        events: {
+          onReady: (event) => {
+            event.target.mute();
+            event.target.seekTo(startSeconds, true);
+            event.target.playVideo();
+          },
+        },
+      });
+    };
+
     const hydrateHeroVideo = () => {
       const iframe = document.getElementById('hero-video-iframe');
       if (!(iframe instanceof HTMLIFrameElement)) return;
@@ -67,7 +112,8 @@ import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
       if (!videoId) return;
 
       const randomStart = Math.floor(45 + Math.random() * 210);
-      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&start=${randomStart}`;
+      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}&start=${randomStart}`;
+      void forceAutoplay(randomStart);
     };
 
     hydrateHeroVideo();
