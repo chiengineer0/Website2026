@@ -2,12 +2,24 @@
 ---
 <section class="relative flex min-h-screen items-center overflow-hidden">
   <div class="absolute inset-0 overflow-hidden">
-    <img src="/Website2026/images/hero-mobile.svg" alt="Night power grid and electricians" class="h-full w-full object-cover" />
+    <img id="hero-video-poster" src="/Website2026/images/hero-mobile.svg" alt="Night power grid and electricians" class="h-full w-full object-cover" />
+    <video
+      id="hero-video-local"
+      class="absolute left-1/2 top-1/2 hidden h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 object-cover brightness-140 contrast-112 saturate-120 blur-[1px]"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      poster="/Website2026/images/hero-mobile.svg"
+    >
+      <source src="/Website2026/videos/hero-4k.webm" type="video/webm" />
+      <source src="/Website2026/videos/hero-4k.mp4" type="video/mp4" />
+    </video>
     <iframe
       id="hero-video-iframe"
-      class="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 brightness-140 contrast-112 saturate-120 blur-[1px]"
+      class="absolute left-1/2 top-1/2 hidden h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 brightness-140 contrast-112 saturate-120 blur-[1px]"
       data-video-id="jkLZ5O1REY4"
-      src="https://www.youtube-nocookie.com/embed/jkLZ5O1REY4?autoplay=1&mute=1&loop=1&playlist=jkLZ5O1REY4&controls=0&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&vq=hd2160&enablejsapi=1&start=120"
       title="Electrical infrastructure background"
       loading="eager"
       allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
@@ -23,6 +35,33 @@
   </div>
 
   <script is:inline>
+    const randomStartPoint = (duration) => {
+      if (!Number.isFinite(duration) || duration <= 1) return 0;
+      const safeStartMin = duration * 0.22;
+      const safeStartMax = duration * 0.72;
+      return Math.floor(safeStartMin + Math.random() * Math.max(1, safeStartMax - safeStartMin));
+    };
+
+    const toggleVisualLayers = (mode) => {
+      const poster = document.getElementById('hero-video-poster');
+      const localVideo = document.getElementById('hero-video-local');
+      const iframe = document.getElementById('hero-video-iframe');
+
+      if (!(poster instanceof HTMLImageElement) || !(localVideo instanceof HTMLVideoElement) || !(iframe instanceof HTMLIFrameElement)) return;
+
+      if (mode === 'local') {
+        poster.classList.add('hidden');
+        localVideo.classList.remove('hidden');
+        iframe.classList.add('hidden');
+      }
+
+      if (mode === 'youtube') {
+        poster.classList.add('hidden');
+        localVideo.classList.add('hidden');
+        iframe.classList.remove('hidden');
+      }
+    };
+
     const buildVideoUrl = (videoId, startSeconds) => {
       const params = new URLSearchParams({
         autoplay: '1',
@@ -75,12 +114,14 @@
       iframe.src = buildVideoUrl(videoId, startSeconds);
     };
 
-    const hydrateHeroVideo = () => {
+    const startYoutubeFallback = () => {
       const iframe = document.getElementById('hero-video-iframe');
       if (!(iframe instanceof HTMLIFrameElement)) return;
 
       const randomStart = Math.floor(45 + Math.random() * 210);
+      toggleVisualLayers('youtube');
       setVideoSource(randomStart);
+
       iframe.onload = () => {
         let tries = 0;
         const timer = window.setInterval(() => {
@@ -89,19 +130,32 @@
           if (tries >= 8) window.clearInterval(timer);
         }, 400);
       };
+    };
 
-      window.setTimeout(() => {
-        const frame = document.getElementById('hero-video-iframe');
-        if (!(frame instanceof HTMLIFrameElement)) return;
-        if (!frame.src) setVideoSource(randomStart);
-        attemptAutoplay(frame);
-      }, 1200);
+    const startLocalVideo = () => {
+      const localVideo = document.getElementById('hero-video-local');
+      if (!(localVideo instanceof HTMLVideoElement)) {
+        startYoutubeFallback();
+        return;
+      }
 
-      window.setTimeout(() => {
-        const frame = document.getElementById('hero-video-iframe');
-        if (!(frame instanceof HTMLIFrameElement)) return;
-        requestBestQuality(frame);
-      }, 2400);
+      toggleVisualLayers('local');
+
+      const onMetadata = () => {
+        localVideo.currentTime = randomStartPoint(localVideo.duration);
+        const playPromise = localVideo.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => startYoutubeFallback());
+        }
+      };
+
+      localVideo.addEventListener('loadedmetadata', onMetadata, { once: true });
+      localVideo.addEventListener('error', () => startYoutubeFallback(), { once: true });
+      localVideo.load();
+    };
+
+    const hydrateHeroVideo = () => {
+      startLocalVideo();
     };
 
     hydrateHeroVideo();
