@@ -35,6 +35,9 @@
     <button id="hero-video-play-mobile" type="button" class="mt-6 inline-flex min-h-12 items-center rounded-md border border-white/30 bg-black/45 px-4 text-sm font-semibold text-white md:hidden">
       Tap to play background video
     </button>
+    <p id="hero-video-mobile-note" class="mt-3 hidden text-xs text-white/70 md:hidden">
+      Mobile 4K source is not available yet. Add /public/videos/hero-4k.mp4 for true HD playback.
+    </p>
   </div>
 
   <script is:inline>
@@ -123,6 +126,24 @@
       iframe.src = buildVideoUrl(videoId, startSeconds);
     };
 
+    const isMobileViewport = () => window.matchMedia('(max-width: 767px)').matches;
+
+    const local4kSourceExists = async () => {
+      try {
+        const response = await fetch('/Website2026/videos/hero-4k.mp4', { method: 'HEAD', cache: 'no-store' });
+        return response.ok;
+      } catch {
+        return false;
+      }
+    };
+
+    const showMobileSourceNote = () => {
+      const note = document.getElementById('hero-video-mobile-note');
+      if (note instanceof HTMLParagraphElement) {
+        note.classList.remove('hidden');
+      }
+    };
+
     const startYoutubeFallback = () => {
       const iframe = document.getElementById('hero-video-iframe');
       if (!(iframe instanceof HTMLIFrameElement)) return;
@@ -146,7 +167,7 @@
       if (!(button instanceof HTMLButtonElement)) return;
 
       const localVideo = document.getElementById('hero-video-local');
-      const isMobile = window.matchMedia('(max-width: 767px)').matches;
+      const isMobile = isMobileViewport();
 
       if (!isMobile) {
         button.classList.add('hidden');
@@ -164,7 +185,12 @@
             playPromise
               .then(() => hideButton())
               .catch(() => {
-                startYoutubeFallback();
+                if (isMobileViewport()) {
+                  toggleVisualLayers('poster');
+                  showMobileSourceNote();
+                } else {
+                  startYoutubeFallback();
+                }
                 hideButton();
               });
           } else {
@@ -181,7 +207,12 @@
     const startLocalVideo = () => {
       const localVideo = document.getElementById('hero-video-local');
       if (!(localVideo instanceof HTMLVideoElement)) {
-        startYoutubeFallback();
+        if (isMobileViewport()) {
+          toggleVisualLayers('poster');
+          showMobileSourceNote();
+        } else {
+          startYoutubeFallback();
+        }
         return;
       }
 
@@ -191,7 +222,12 @@
       const fallbackTimer = window.setTimeout(() => {
         if (settled) return;
         settled = true;
-        startYoutubeFallback();
+        if (isMobileViewport()) {
+          toggleVisualLayers('poster');
+          showMobileSourceNote();
+        } else {
+          startYoutubeFallback();
+        }
       }, 1800);
 
       const onMetadata = () => {
@@ -212,13 +248,30 @@
         if (settled) return;
         settled = true;
         window.clearTimeout(fallbackTimer);
-        startYoutubeFallback();
+        if (isMobileViewport()) {
+          toggleVisualLayers('poster');
+          showMobileSourceNote();
+        } else {
+          startYoutubeFallback();
+        }
       }, { once: true });
       localVideo.load();
     };
 
-    const hydrateHeroVideo = () => {
+    const hydrateHeroVideo = async () => {
       wireMobileTapFallback();
+      const hasLocal4k = await local4kSourceExists();
+
+      if (!hasLocal4k) {
+        if (isMobileViewport()) {
+          toggleVisualLayers('poster');
+          showMobileSourceNote();
+        } else {
+          startYoutubeFallback();
+        }
+        return;
+      }
+
       startLocalVideo();
     };
 
