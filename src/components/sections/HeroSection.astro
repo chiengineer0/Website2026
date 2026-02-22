@@ -3,22 +3,9 @@
 <section class="relative flex min-h-screen items-center overflow-hidden">
   <div class="absolute inset-0 overflow-hidden">
     <img id="hero-video-poster" src="/Website2026/images/hero-mobile.svg" alt="Night power grid and electricians" class="h-full w-full object-cover" />
-    <video
-      id="hero-video-local"
-      class="absolute left-1/2 top-1/2 hidden h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 object-cover brightness-140 contrast-112 saturate-120 blur-[1px]"
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="auto"
-      poster="/Website2026/images/hero-mobile.svg"
-    >
-      <source src="/Website2026/videos/hero-4k.webm" type="video/webm" />
-      <source src="/Website2026/videos/hero-4k.mp4" type="video/mp4" />
-    </video>
     <iframe
       id="hero-video-iframe"
-      class="absolute left-1/2 top-1/2 hidden h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 brightness-140 contrast-112 saturate-120 blur-[1px]"
+      class="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 brightness-140 contrast-112 saturate-120 blur-[1px]"
       data-video-id="jkLZ5O1REY4"
       title="Electrical infrastructure background"
       loading="eager"
@@ -35,45 +22,9 @@
     <button id="hero-video-play-mobile" type="button" class="mt-6 inline-flex min-h-12 items-center rounded-md border border-white/30 bg-black/45 px-4 text-sm font-semibold text-white md:hidden">
       Tap to play background video
     </button>
-    <p id="hero-video-mobile-note" class="mt-3 hidden text-xs text-white/70 md:hidden">
-      Mobile 4K source is not available yet. Add /public/videos/hero-4k.mp4 for true HD playback.
-    </p>
   </div>
 
   <script is:inline>
-    const randomStartPoint = (duration) => {
-      if (!Number.isFinite(duration) || duration <= 1) return 0;
-      const safeStartMin = duration * 0.22;
-      const safeStartMax = duration * 0.72;
-      return Math.floor(safeStartMin + Math.random() * Math.max(1, safeStartMax - safeStartMin));
-    };
-
-    const toggleVisualLayers = (mode) => {
-      const poster = document.getElementById('hero-video-poster');
-      const localVideo = document.getElementById('hero-video-local');
-      const iframe = document.getElementById('hero-video-iframe');
-
-      if (!(poster instanceof HTMLImageElement) || !(localVideo instanceof HTMLVideoElement) || !(iframe instanceof HTMLIFrameElement)) return;
-
-      if (mode === 'local') {
-        poster.classList.add('hidden');
-        localVideo.classList.remove('hidden');
-        iframe.classList.add('hidden');
-      }
-
-      if (mode === 'youtube') {
-        poster.classList.add('hidden');
-        localVideo.classList.add('hidden');
-        iframe.classList.remove('hidden');
-      }
-
-      if (mode === 'poster') {
-        poster.classList.remove('hidden');
-        localVideo.classList.add('hidden');
-        iframe.classList.add('hidden');
-      }
-    };
-
     const buildVideoUrl = (videoId, startSeconds) => {
       const params = new URLSearchParams({
         autoplay: '1',
@@ -92,6 +43,13 @@
       });
 
       return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+    };
+
+    const hidePoster = () => {
+      const poster = document.getElementById('hero-video-poster');
+      if (poster instanceof HTMLImageElement) {
+        poster.classList.add('hidden');
+      }
     };
 
     const postPlayerCommand = (iframe, func, args = []) => {
@@ -116,163 +74,46 @@
       postPlayerCommand(iframe, 'playVideo');
     };
 
-    const setVideoSource = (startSeconds) => {
+    const hydrateHeroVideo = () => {
       const iframe = document.getElementById('hero-video-iframe');
+      const button = document.getElementById('hero-video-play-mobile');
       if (!(iframe instanceof HTMLIFrameElement)) return;
 
       const videoId = iframe.dataset.videoId;
       if (!videoId) return;
 
-      iframe.src = buildVideoUrl(videoId, startSeconds);
-    };
-
-    const isMobileViewport = () => window.matchMedia('(max-width: 767px)').matches;
-
-    const local4kSourceExists = async () => {
-      try {
-        const response = await fetch('/Website2026/videos/hero-4k.mp4', { method: 'HEAD', cache: 'no-store' });
-        return response.ok;
-      } catch {
-        return false;
-      }
-    };
-
-    const showMobileSourceNote = () => {
-      const note = document.getElementById('hero-video-mobile-note');
-      if (note instanceof HTMLParagraphElement) {
-        note.classList.remove('hidden');
-      }
-    };
-
-    const startYoutubeFallback = () => {
-      const iframe = document.getElementById('hero-video-iframe');
-      if (!(iframe instanceof HTMLIFrameElement)) return;
-
       const randomStart = Math.floor(45 + Math.random() * 210);
-      toggleVisualLayers('youtube');
-      setVideoSource(randomStart);
+      iframe.src = buildVideoUrl(videoId, randomStart);
 
       iframe.onload = () => {
+        hidePoster();
         let tries = 0;
         const timer = window.setInterval(() => {
           attemptAutoplay(iframe);
           tries += 1;
-          if (tries >= 8) window.clearInterval(timer);
-        }, 400);
-      };
-    };
-
-    const wireMobileTapFallback = () => {
-      const button = document.getElementById('hero-video-play-mobile');
-      if (!(button instanceof HTMLButtonElement)) return;
-
-      const localVideo = document.getElementById('hero-video-local');
-      const isMobile = isMobileViewport();
-
-      if (!isMobile) {
-        button.classList.add('hidden');
-        return;
-      }
-
-      const hideButton = () => button.classList.add('hidden');
-
-      button.classList.remove('hidden');
-      button.onclick = () => {
-        if (localVideo instanceof HTMLVideoElement) {
-          toggleVisualLayers('local');
-          const playPromise = localVideo.play();
-          if (playPromise && typeof playPromise.catch === 'function') {
-            playPromise
-              .then(() => hideButton())
-              .catch(() => {
-                if (isMobileViewport()) {
-                  toggleVisualLayers('poster');
-                  showMobileSourceNote();
-                } else {
-                  startYoutubeFallback();
-                }
-                hideButton();
-              });
-          } else {
-            hideButton();
-          }
-          return;
-        }
-
-        startYoutubeFallback();
-        hideButton();
-      };
-    };
-
-    const startLocalVideo = () => {
-      const localVideo = document.getElementById('hero-video-local');
-      if (!(localVideo instanceof HTMLVideoElement)) {
-        if (isMobileViewport()) {
-          toggleVisualLayers('poster');
-          showMobileSourceNote();
-        } else {
-          startYoutubeFallback();
-        }
-        return;
-      }
-
-      toggleVisualLayers('poster');
-
-      let settled = false;
-      const fallbackTimer = window.setTimeout(() => {
-        if (settled) return;
-        settled = true;
-        if (isMobileViewport()) {
-          toggleVisualLayers('poster');
-          showMobileSourceNote();
-        } else {
-          startYoutubeFallback();
-        }
-      }, 1800);
-
-      const onMetadata = () => {
-        if (settled) return;
-        settled = true;
-        window.clearTimeout(fallbackTimer);
-
-        localVideo.currentTime = randomStartPoint(localVideo.duration);
-        toggleVisualLayers('local');
-        const playPromise = localVideo.play();
-        if (playPromise && typeof playPromise.catch === 'function') {
-          playPromise.catch(() => startYoutubeFallback());
-        }
+          if (tries >= 10) window.clearInterval(timer);
+        }, 350);
       };
 
-      localVideo.addEventListener('loadedmetadata', onMetadata, { once: true });
-      localVideo.addEventListener('error', () => {
-        if (settled) return;
-        settled = true;
-        window.clearTimeout(fallbackTimer);
-        if (isMobileViewport()) {
-          toggleVisualLayers('poster');
-          showMobileSourceNote();
-        } else {
-          startYoutubeFallback();
-        }
-      }, { once: true });
-      localVideo.load();
-    };
+      window.setTimeout(() => {
+        if (!iframe.src) iframe.src = buildVideoUrl(videoId, randomStart);
+        attemptAutoplay(iframe);
+      }, 900);
 
-    const hydrateHeroVideo = async () => {
-      wireMobileTapFallback();
-      const hasLocal4k = await local4kSourceExists();
-
-      if (!hasLocal4k) {
-        if (isMobileViewport()) {
-          toggleVisualLayers('poster');
-          showMobileSourceNote();
+      if (button instanceof HTMLButtonElement) {
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        if (!isMobile) {
+          button.classList.add('hidden');
         } else {
-          startYoutubeFallback();
+          button.classList.remove('hidden');
+          button.onclick = () => {
+            attemptAutoplay(iframe);
+            requestBestQuality(iframe);
+            hidePoster();
+            button.classList.add('hidden');
+          };
         }
-        return;
       }
-
-      startLocalVideo();
     };
 
     hydrateHeroVideo();
