@@ -1,0 +1,68 @@
+---
+import '@fontsource/inter/variable.css';
+import '@fontsource-variable/geist';
+import '@/styles/global.css';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import MobileBottomNav from '@/components/layout/MobileBottomNav.astro';
+import { EmergencyFab } from '@/components/islands/EmergencyFab';
+import { PagefindSearch } from '@/components/islands/PagefindSearch';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, 'https://chiengineer0.github.io/Website2026/').toString();
+const businessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Electrician',
+  name: '[BRAND NAME] Electric',
+  slogan: 'Wired for Excellence',
+  url: 'https://chiengineer0.github.io/Website2026/',
+  telephone: '+1-555-123-9876',
+  areaServed: 'Greater Metro Service Area',
+  priceRange: '$$$',
+};
+---
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(businessSchema)}></script>
+    <ClientRouter />
+  </head>
+  <body class="mobile-bottom-safe">
+    <Header />
+    <PagefindSearch client:load />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <MobileBottomNav />
+    <EmergencyFab client:load />
+    <script is:inline>
+      const revealTargets = () => {
+        const observer = new IntersectionObserver((entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+          }
+        }, { threshold: 0.2 });
+        for (const element of document.querySelectorAll('.fade-up')) observer.observe(element);
+      };
+      revealTargets();
+      document.addEventListener('astro:page-load', revealTargets);
+    </script>
+  </body>
+</html>

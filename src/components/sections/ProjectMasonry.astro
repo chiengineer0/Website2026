@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+const projects = await getCollection('projects');
+const categories = ['All', 'Residential', 'Commercial', 'Panel', 'EV', 'Lighting', 'Industrial'];
+---
+<section class="container-shell py-16">
+  <h2 class="text-3xl font-black">Featured Installations</h2>
+  <div class="mt-5 flex flex-wrap gap-2" id="project-filters">
+    {categories.map((category) => (
+      <a href={category === 'All' ? '/Website2026/projects/' : `/Website2026/projects/?category=${category}`} class="min-h-12 rounded-full border border-white/20 px-4 py-2 text-sm hover:border-[var(--color-electric)]">{category}</a>
+    ))}
+  </div>
+  <div class="mt-8 columns-1 gap-4 md:columns-2 lg:columns-3">
+    {projects.map((project) => (
+      <a href={`/Website2026/projects/${project.data.slug}/`} class="mb-4 block break-inside-avoid overflow-hidden rounded-xl border border-white/15 bg-white/5 p-3">
+        <div class="relative overflow-hidden rounded-lg">
+          <img src={project.data.beforeImage} alt={`Before - ${project.data.coverAlt}`} class="w-full" />
+          <img src={project.data.afterImage} alt={`After - ${project.data.coverAlt}`} class="absolute inset-0 w-1/2 border-r-2 border-[var(--color-amber)] object-cover" />
+        </div>
+        <h3 class="mt-3 font-semibold">{project.data.title}</h3>
+        <p class="text-sm text-white/70">{project.data.city} · {project.data.duration}</p>
+      </a>
+    ))}
+  </div>
+</section>

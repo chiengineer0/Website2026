@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { ProjectLightbox } from '@/components/islands/ProjectLightbox';
+
+const projects = await getCollection('projects');
+const selectedCategory = Astro.url.searchParams.get('category');
+const filtered = selectedCategory ? projects.filter((project) => project.data.category === selectedCategory) : projects;
+---
+<SiteLayout title="Project Portfolio | [BRAND NAME] Electric" description="Explore completed residential and commercial electrical case studies.">
+  <section class="container-shell py-16">
+    <h1 class="text-4xl font-black">Project Portfolio</h1>
+    <p class="mt-2 text-white/80">Verified installations with measurable reliability improvements and documented outcomes.</p>
+    <div class="mt-6 columns-1 gap-4 md:columns-2 lg:columns-3">
+      {filtered.map((project) => (
+        <article class="mb-4 break-inside-avoid rounded-xl border border-white/15 bg-white/5 p-3">
+          <div class="relative overflow-hidden rounded-lg">
+            <img src={project.data.beforeImage} alt={`Before - ${project.data.coverAlt}`} class="w-full" />
+            <img src={project.data.afterImage} alt={`After - ${project.data.coverAlt}`} class="absolute inset-0 w-1/2 border-r-2 border-[var(--color-amber)] object-cover" />
+          </div>
+          <h2 class="mt-3 font-semibold">{project.data.title}</h2>
+          <p class="text-sm text-white/70">{project.data.city} · {project.data.scope}</p>
+          <div class="mt-3 flex items-center justify-between">
+            <a href={`/Website2026/projects/${project.data.slug}/`} class="text-sm text-[var(--color-electric)]">View case study</a>
+            <ProjectLightbox client:idle images={[{ src: project.data.beforeImage, alt: `Before ${project.data.title}` }, { src: project.data.afterImage, alt: `After ${project.data.title}` }]} />
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</SiteLayout>

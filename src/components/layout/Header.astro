@@ -1,0 +1,22 @@
+---
+import { ThemeToggle } from '@/components/islands/ThemeToggle';
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/services/', label: 'Services' },
+  { href: '/projects/', label: 'Projects' },
+  { href: '/quote/', label: 'Quote' },
+  { href: '/blog/', label: 'Blog' },
+  { href: '/contact/', label: 'Contact' },
+];
+---
+<header class="sticky top-0 z-40 border-b border-white/10 bg-black/75 backdrop-blur-sm">
+  <div class="container-shell flex min-h-16 items-center justify-between gap-4">
+    <a href="/Website2026/" class="text-lg font-black tracking-tight">[BRAND NAME] Electric</a>
+    <nav aria-label="Primary" class="hidden items-center gap-1 md:flex">
+      {links.map((link) => (
+        <a href={`/Website2026${link.href}`} class="glow-hover rounded-md px-3 py-2 text-sm text-white/85 hover:text-white">{link.label}</a>
+      ))}
+    </nav>
+    <ThemeToggle client:load />
+  </div>
+</header>

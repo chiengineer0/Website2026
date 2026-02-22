@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://chiengineer0.github.io/Website2026/sitemap-index.xml

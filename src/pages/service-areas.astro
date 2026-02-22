@@ -1,0 +1,11 @@
+---
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { ServiceAreaMap } from '@/components/islands/ServiceAreaMap';
+---
+<SiteLayout title="Service Areas | [BRAND NAME] Electric" description="Cities and service zones covered by our licensed electricians.">
+  <section class="container-shell py-16">
+    <h1 class="text-4xl font-black">Service Areas</h1>
+    <p class="mt-3 max-w-2xl text-white/80">We serve premium residential and commercial clients across the metro core and surrounding districts with dispatch-ready crews.</p>
+    <div class="mt-8"><ServiceAreaMap client:load /></div>
+  </section>
+</SiteLayout>

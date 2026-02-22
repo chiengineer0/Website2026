@@ -1,0 +1,26 @@
+---
+import SiteLayout from '@/layouts/SiteLayout.astro';
+---
+<SiteLayout title="Emergency Electrical Service | [BRAND NAME] Electric" description="24/7 emergency electrical dispatch with rapid response.">
+  <section class="container-shell py-16">
+    <div class="rounded-2xl border border-red-400/45 bg-red-950/35 p-8">
+      <h1 class="text-4xl font-black text-red-200">Emergency Electrical Response</h1>
+      <p class="mt-4 text-red-100">If you smell burning insulation, see sparking panels, or experience total outage with safety risk, call immediately.</p>
+      <a href="tel:+15551239876" class="mt-6 inline-flex min-h-12 items-center rounded-md bg-[var(--color-amber)] px-6 font-black text-black">⚡ Call (555) 123-9876</a>
+      <ul class="mt-6 list-disc space-y-1 pl-5 text-sm text-red-100">
+        <li>24/7 dispatch and hazard triage</li>
+        <li>Primary zones targeted within 60 minutes</li>
+        <li>Licensed emergency technicians only</li>
+      </ul>
+      <button id="notify-btn" type="button" class="mt-6 min-h-12 rounded-md border border-red-300 px-4 text-sm">Enable outage alerts</button>
+    </div>
+  </section>
+  <script is:inline>
+    const btn = document.getElementById('notify-btn');
+    btn?.addEventListener('click', async () => {
+      if (!('Notification' in window)) return;
+      await Notification.requestPermission();
+      btn.textContent = Notification.permission === 'granted' ? 'Alerts Enabled' : 'Alerts Unavailable';
+    });
+  </script>
+</SiteLayout>

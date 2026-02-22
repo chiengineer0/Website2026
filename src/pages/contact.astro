@@ -1,0 +1,21 @@
+---
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { ContactForm } from '@/components/islands/ContactForm';
+import { ServiceAreaMap } from '@/components/islands/ServiceAreaMap';
+import { isOpenNow } from '@/lib/utils';
+const open = isOpenNow();
+---
+<SiteLayout title="Contact [BRAND NAME] Electric" description="Request service, schedule estimates, and connect with our licensed electrical team.">
+  <section class="container-shell py-16">
+    <h1 class="text-4xl font-black">Contact Our Team</h1>
+    <p class="mt-2 text-white/80">Response within 1 business hour for standard requests, immediate triage for emergencies.</p>
+    <p class:list={[
+      'mt-2 inline-flex rounded-full border px-3 py-1 text-sm',
+      open ? 'border-emerald-400 text-emerald-300' : 'border-red-400 text-red-300',
+    ]}>{open ? 'Open Now' : 'Closed — Emergency Dispatch Active'}</p>
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      <ContactForm client:load />
+      <ServiceAreaMap client:load />
+    </div>
+  </section>
+</SiteLayout>

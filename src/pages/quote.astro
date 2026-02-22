@@ -1,0 +1,11 @@
+---
+import SiteLayout from '@/layouts/SiteLayout.astro';
+import { QuoteEstimator } from '@/components/islands/QuoteEstimator';
+---
+<SiteLayout title="Quote Estimator | [BRAND NAME] Electric" description="Interactive multi-step estimator for electrical projects.">
+  <section class="container-shell py-16">
+    <h1 class="text-4xl font-black">Interactive Quote Estimator</h1>
+    <p class="mt-3 text-white/80">Build your project profile in minutes. Your progress is saved automatically.</p>
+    <div class="mt-8"><QuoteEstimator client:load /></div>
+  </section>
+</SiteLayout>

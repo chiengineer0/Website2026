@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import { CounterStats } from '@/components/islands/CounterStats';
+const testimonials = await getCollection('testimonials');
+---
+<section class="container-shell py-16">
+  <CounterStats client:load />
+
+  <h2 class="mt-14 text-3xl font-black">Client Confidence, Earned Daily</h2>
+  <div class="mt-6 grid gap-4 lg:grid-cols-3">
+    {testimonials.map((testimonial) => (
+      <article class="rounded-xl border border-white/15 bg-white/5 p-5">
+        <p class="text-[var(--color-amber)]">{'★'.repeat(testimonial.data.rating)}</p>
+        <blockquote class="mt-3 text-white/85">“{testimonial.data.quote}”</blockquote>
+        <p class="mt-4 text-sm font-semibold">{testimonial.data.name} · {testimonial.data.city}</p>
+        <span class="mt-2 inline-flex rounded-full border border-white/20 px-3 py-1 text-xs">{testimonial.data.jobType}</span>
+      </article>
+    ))}
+  </div>
+
+  <div class="mt-8 flex flex-wrap gap-3 text-xs text-white/70">
+    {['NECA', 'IBEW', 'Square D', 'Generac', 'Tesla Certified', 'Master Electrician Board'].map((logo) => (
+      <span class="rounded-full border border-white/20 px-3 py-2">{logo}</span>
+    ))}
+  </div>
+</section>
