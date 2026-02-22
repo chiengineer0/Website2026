@@ -5,7 +5,7 @@
     <img src="/Website2026/images/hero-mobile.svg" alt="Night power grid and electricians" class="h-full w-full object-cover" />
     <iframe
       id="hero-video-iframe"
-      class="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 blur-[1px]"
+      class="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 brightness-115 contrast-110 saturate-110 blur-[1px]"
       data-video-id="SH3iHu-m7Fo"
       title="Electrical infrastructure background"
       loading="eager"
@@ -17,66 +17,51 @@
   <div class="hero-edge-vignette absolute inset-0"></div>
 
   <div class="container-shell relative z-20 py-20">
-    <h1 class="section-title max-w-4xl font-black">[BRAND NAME] Electric</h1>
+    <h1 class="section-title max-w-4xl font-black">إصلاح الكهرباء</h1>
     <p class="mt-4 text-lg text-white/88">Wired for Excellence.</p>
   </div>
 
   <script is:inline>
-    let heroPlayer = null;
-
-    const ensureYouTubeApi = () => {
-      if (window.YT?.Player) return Promise.resolve(window.YT);
-
-      return new Promise((resolve) => {
-        const existing = document.querySelector('script[data-youtube-api="true"]');
-        if (!existing) {
-          const script = document.createElement('script');
-          script.src = 'https://www.youtube.com/iframe_api';
-          script.async = true;
-          script.dataset.youtubeApi = 'true';
-          document.head.appendChild(script);
-        }
-
-        const previous = window.onYouTubeIframeAPIReady;
-        window.onYouTubeIframeAPIReady = () => {
-          if (typeof previous === 'function') previous();
-          resolve(window.YT);
-        };
+    const buildVideoUrl = (videoId, startSeconds) => {
+      const params = new URLSearchParams({
+        autoplay: '1',
+        mute: '1',
+        loop: '1',
+        playlist: videoId,
+        controls: '0',
+        modestbranding: '1',
+        playsinline: '1',
+        rel: '0',
+        iv_load_policy: '3',
+        start: String(startSeconds),
+        vq: 'hd2160',
       });
+
+      return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
     };
 
-    const forceAutoplay = async (startSeconds) => {
-      const iframe = document.getElementById('hero-video-iframe');
-      if (!(iframe instanceof HTMLIFrameElement)) return;
-
-      const YT = await ensureYouTubeApi();
-      if (!YT?.Player) return;
-
-      if (heroPlayer?.destroy) {
-        heroPlayer.destroy();
-      }
-
-      heroPlayer = new YT.Player(iframe, {
-        events: {
-          onReady: (event) => {
-            event.target.mute();
-            event.target.seekTo(startSeconds, true);
-            event.target.playVideo();
-          },
-        },
-      });
-    };
-
-    const hydrateHeroVideo = () => {
+    const setVideoSource = (startSeconds) => {
       const iframe = document.getElementById('hero-video-iframe');
       if (!(iframe instanceof HTMLIFrameElement)) return;
 
       const videoId = iframe.dataset.videoId;
       if (!videoId) return;
 
+      iframe.src = buildVideoUrl(videoId, startSeconds);
+    };
+
+    const hydrateHeroVideo = () => {
+      const iframe = document.getElementById('hero-video-iframe');
+      if (!(iframe instanceof HTMLIFrameElement)) return;
+
       const randomStart = Math.floor(45 + Math.random() * 210);
-      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}&start=${randomStart}`;
-      void forceAutoplay(randomStart);
+      setVideoSource(randomStart);
+
+      window.setTimeout(() => {
+        const frame = document.getElementById('hero-video-iframe');
+        if (!(frame instanceof HTMLIFrameElement)) return;
+        if (!frame.src) setVideoSource(randomStart);
+      }, 1200);
     };
 
     hydrateHeroVideo();

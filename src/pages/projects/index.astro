@@ -8,7 +8,7 @@ const projects = await getCollection('projects');
 const selectedCategory = Astro.url.searchParams.get('category');
 const filtered = selectedCategory ? projects.filter((project) => project.data.category === selectedCategory) : projects;
 ---
-<SiteLayout title="Project Portfolio | [BRAND NAME] Electric" description="Explore completed residential and commercial electrical case studies.">
+<SiteLayout title="Project Portfolio | إصلاح الكهرباء" description="Explore completed residential and commercial electrical case studies.">
   <section class="container-shell py-16">
     <h1 class="section-title font-black">Project Portfolio</h1>
     <p class="mt-2 text-white/80">Verified installations with measurable reliability improvements and documented outcomes.</p>

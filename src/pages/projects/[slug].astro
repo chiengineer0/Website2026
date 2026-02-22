@@ -25,12 +25,12 @@ const reviewSchema = {
   '@context': 'https://schema.org',
   '@type': 'Review',
   reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
-  author: { '@type': 'Organization', name: '[BRAND NAME] Electric Quality Assurance' },
+  author: { '@type': 'Organization', name: 'ضمان الجودة - إصلاح الكهرباء' },
   itemReviewed: { '@type': 'Service', name: project.data.title },
   reviewBody: `This project in ${project.data.city} delivered code-compliant performance improvements and verified workmanship quality.`,
 };
 ---
-<SiteLayout title={`${project.data.title} | [BRAND NAME] Electric`} description={project.data.scope}>
+<SiteLayout title={`${project.data.title} | إصلاح الكهرباء`} description={project.data.scope}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <script is:inline type="application/ld+json" set:html={JSON.stringify(reviewSchema)} />
   <article class="container-shell py-16">

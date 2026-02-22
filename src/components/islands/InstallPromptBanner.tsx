@@ -31,7 +31,7 @@ export function InstallPromptBanner() {
     <aside className="fixed bottom-24 left-1/2 z-50 w-[min(720px,calc(100%-1rem))] -translate-x-1/2 rounded-xl border border-white/20 bg-black/90 p-4 shadow-2xl backdrop-blur-md md:bottom-6" aria-label="Install app banner">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-semibold">Install [BRAND NAME] Electric App</p>
+          <p className="font-semibold">Install إصلاح الكهرباء App</p>
           <p className="mt-1 text-sm text-white/75">Quick emergency access, offline service details, and faster repeat quote requests.</p>
           <button
             type="button"

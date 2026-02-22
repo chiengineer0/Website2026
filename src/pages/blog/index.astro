@@ -7,7 +7,7 @@ const tags = ['All', ...new Set(posts.flatMap((post) => post.data.tags))];
 const selectedTag = Astro.url.searchParams.get('tag') ?? 'All';
 const filteredPosts = selectedTag === 'All' ? posts : posts.filter((post) => post.data.tags.includes(selectedTag));
 ---
-<SiteLayout title="Electrical Insights Blog | [BRAND NAME] Electric" description="Electrical safety, code updates, EV charging guidance, and project stories.">
+<SiteLayout title="Electrical Insights Blog | إصلاح الكهرباء" description="Electrical safety, code updates, EV charging guidance, and project stories.">
   <section class="container-shell py-16">
     <h1 class="section-title font-black">Electrical Insights</h1>
     <div class="mt-5 flex flex-wrap gap-2">

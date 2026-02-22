@@ -24,11 +24,11 @@ const aggregateRatingSchema = {
   '@context': 'https://schema.org',
   '@type': 'Service',
   name: service.data.title,
-  provider: { '@type': 'Electrician', name: '[BRAND NAME] Electric' },
+  provider: { '@type': 'Electrician', name: 'إصلاح الكهرباء' },
   aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.9', reviewCount: '187' },
 };
 ---
-<SiteLayout title={`${service.data.title} | [BRAND NAME] Electric`} description={service.data.description}>
+<SiteLayout title={`${service.data.title} | إصلاح الكهرباء`} description={service.data.description}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   <script is:inline type="application/ld+json" set:html={JSON.stringify(aggregateRatingSchema)} />
   <article class="container-shell py-16">
