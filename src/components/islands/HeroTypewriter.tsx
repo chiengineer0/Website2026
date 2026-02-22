@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 const lines = ['Licensed & Insured', '24/7 Emergency Service', 'Commercial & Residential', 'Panel Upgrades & EV Chargers'];
 
 export function HeroTypewriter() {
-  const letters = useMemo(() => '[BRAND NAME] Electric'.split(''), []);
+  const letters = useMemo(() => 'إصلاح الكهرباء'.split(''), []);
   const [lineIndex, setLineIndex] = useState(0);
   const [typed, setTyped] = useState('');
 

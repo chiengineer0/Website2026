@@ -155,7 +155,7 @@ export function QuoteEstimator() {
     </style>
   </head>
   <body>
-    <h1>[BRAND NAME] Electric - Quote Summary</h1>
+    <h1>إصلاح الكهرباء - Quote Summary</h1>
     <p>Generated ${escapeHtml(generatedAt)}</p>
     <table>${rows}</table>
     <p class="footer">Print this page and choose “Save as PDF” in the print dialog if you need a PDF file.</p>

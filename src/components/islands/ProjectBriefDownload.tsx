@@ -15,7 +15,7 @@ export function ProjectBriefDownload({ title, city, scope, duration, tags }: Pro
       `Scope: ${scope}`,
       `Tags: ${tags.join(', ')}`,
       '',
-      'Prepared by [BRAND NAME] Electric',
+      'Prepared by إصلاح الكهرباء',
       'Wired for Excellence',
       'Contact: (555) 123-9876',
     ].join('\n');
