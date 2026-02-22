@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import SiteLayout from '@/layouts/SiteLayout.astro';
+import ServiceComparisonMatrix from '@/components/sections/ServiceComparisonMatrix.astro';
 const services = await getCollection('services');
 ---
 <SiteLayout title="Electrical Services | [BRAND NAME] Electric" description="Panel upgrades, EV charging, rewiring, emergency response, and more.">
@@ -18,5 +19,7 @@ const services = await getCollection('services');
         </article>
       ))}
     </div>
+
+    <ServiceComparisonMatrix services={services} />
   </section>
 </SiteLayout>

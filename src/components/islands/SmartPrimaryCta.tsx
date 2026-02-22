@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { trackEvent } from '@/lib/analytics';
 
 const variants = ['Get a Free Quote', 'Request Priority Estimate'] as const;
 
@@ -19,7 +20,11 @@ export function SmartPrimaryCta() {
   }, []);
 
   return (
-    <a href="/Website2026/quote/" className="pulse-amber glow-hover inline-flex min-h-12 items-center rounded-md bg-[var(--color-amber)] px-6 font-bold text-black">
+    <a
+      href="/Website2026/quote/"
+      className="pulse-amber glow-hover inline-flex min-h-12 items-center rounded-md bg-[var(--color-amber)] px-6 font-bold text-black"
+      onClick={() => trackEvent('hero_primary_cta_click', { label })}
+    >
       {label}
     </a>
   );

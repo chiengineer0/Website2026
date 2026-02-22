@@ -1,0 +1,49 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { ServiceCompareSelector } from '@/components/islands/ServiceCompareSelector';
+
+interface Props {
+  services: CollectionEntry<'services'>[];
+}
+
+const { services } = Astro.props as Props;
+const matrix = services.slice(0, 8);
+const compareItems = services.map((service) => ({
+  slug: service.slug,
+  title: service.data.title,
+  category: service.data.category,
+  timeline: service.data.timeline,
+  startingPrice: service.data.startingPrice,
+  description: service.data.description,
+}));
+---
+<section class="mt-12">
+  <h2 class="text-2xl font-black">Service Comparison Matrix</h2>
+  <p class="mt-2 text-sm text-white/70">Compare project profiles, timelines, and investment baselines before requesting a detailed scope.</p>
+  <div class="mt-4 overflow-x-auto rounded-xl border border-white/15">
+    <table class="w-full min-w-[760px] border-collapse text-left text-sm">
+      <thead class="bg-white/5 text-white/80">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Service</th>
+          <th class="px-4 py-3 font-semibold">Category</th>
+          <th class="px-4 py-3 font-semibold">Timeline</th>
+          <th class="px-4 py-3 font-semibold">Starting Investment</th>
+          <th class="px-4 py-3 font-semibold">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {matrix.map((service) => (
+          <tr class="border-t border-white/10">
+            <td class="px-4 py-3 font-medium">{service.data.title}</td>
+            <td class="px-4 py-3 text-white/75">{service.data.category}</td>
+            <td class="px-4 py-3 text-white/75">{service.data.timeline}</td>
+            <td class="px-4 py-3 text-[var(--color-amber)]">{service.data.startingPrice}</td>
+            <td class="px-4 py-3"><a class="text-[var(--color-electric)]" href={`/Website2026/services/${service.slug}/`}>View Details</a></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <ServiceCompareSelector client:load services={compareItems} />
+</section>

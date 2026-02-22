@@ -37,6 +37,30 @@ export function QuoteEstimator() {
     return `$${low.toLocaleString()} - $${high.toLocaleString()}`;
   }, [data]);
 
+  const leadScore = useMemo(() => {
+    let score = 35;
+    if (data.jobType === 'Commercial') score += 20;
+    if (data.jobType === 'Industrial') score += 28;
+    if (data.urgency) score += 22;
+    if ((data.propertySize ?? 0) > 3500) score += 10;
+    if (data.serviceCategory === 'Emergency') score += 25;
+    if (data.serviceCategory === 'Panel upgrade' || data.serviceCategory === 'Generator') score += 8;
+    return Math.min(100, score);
+  }, [data]);
+
+  const priorityTier = useMemo(() => {
+    if (leadScore >= 80) return 'Priority Dispatch Candidate';
+    if (leadScore >= 60) return 'Accelerated Review';
+    return 'Standard Review Queue';
+  }, [leadScore]);
+
+  const recommendation = useMemo(() => {
+    if (data.serviceCategory === 'Emergency') return 'Immediate safety dispatch recommended. Call directly for fastest triage.';
+    if ((data.propertySize ?? 0) > 4000) return 'A site walk-through is recommended before final estimate to validate load planning and access conditions.';
+    if (data.serviceCategory === 'EV charger install') return 'Include vehicle charging habits and panel photos for a tighter first proposal.';
+    return 'Provide photos of your panel and project area to accelerate final estimate turnaround.';
+  }, [data]);
+
   const completion = ((step + 1) / steps.length) * 100;
 
   function clearDraft() {
@@ -44,6 +68,34 @@ export function QuoteEstimator() {
     setData(initialData);
     setStep(0);
     setErrorMessage('');
+  }
+
+  async function exportPdf() {
+    const { jsPDF } = await import('jspdf');
+    const document = new jsPDF();
+    const lines = [
+      '[BRAND NAME] Electric - Quote Summary',
+      `Date: ${new Date().toLocaleString()}`,
+      '',
+      `Project Type: ${data.jobType ?? '-'}`,
+      `Service: ${data.serviceCategory ?? '-'}`,
+      `Property Size: ${data.propertySize ?? '-'} sq ft`,
+      `Urgency: ${data.urgency ? 'Expedited' : 'Standard'}`,
+      `Estimated Range: ${estimate}`,
+      `Lead Priority: ${priorityTier} (${leadScore}/100)`,
+      '',
+      `Client: ${data.name ?? '-'}`,
+      `Phone: ${data.phone ?? '-'}`,
+      `Email: ${data.email ?? '-'}`,
+      `Address: ${data.address ?? '-'}`,
+    ];
+
+    let y = 20;
+    for (const line of lines) {
+      document.text(line, 14, y);
+      y += 8;
+    }
+    document.save('brand-electric-quote-summary.pdf');
   }
 
   return (
@@ -118,9 +170,16 @@ export function QuoteEstimator() {
               <p><strong>Property Size:</strong> {data.propertySize} sq ft</p>
               <p><strong>Urgency:</strong> {data.urgency ? 'Expedited' : 'Standard'}</p>
             </div>
+            <div className="mt-4 rounded-md border border-white/20 bg-black/35 p-3 text-sm text-white/80">
+              <p><strong>Lead Priority Score:</strong> {leadScore}/100 · {priorityTier}</p>
+              <p className="mt-1 text-white/70">{recommendation}</p>
+            </div>
             <form action="https://formspree.io/f/mzzvgjov" method="POST" className="mt-6">
               <input type="hidden" name="payload" value={JSON.stringify(data)} />
+              <input type="hidden" name="leadScore" value={String(leadScore)} />
+              <input type="hidden" name="priorityTier" value={priorityTier} />
               <button type="submit" className="pulse-amber min-h-12 rounded-md bg-[var(--color-amber)] px-6 font-semibold text-black">Submit Request</button>
+              <button type="button" onClick={exportPdf} className="ml-3 min-h-12 rounded-md border border-white/25 px-6">Download PDF</button>
             </form>
           </div>
         )}

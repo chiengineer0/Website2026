@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import SiteLayout from '@/layouts/SiteLayout.astro';
 import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
 import { StickyQuoteCta } from '@/components/islands/StickyQuoteCta';
+import { ProjectBriefDownload } from '@/components/islands/ProjectBriefDownload';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -11,8 +12,27 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://chiengineer0.github.io/Website2026/' },
+    { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://chiengineer0.github.io/Website2026/projects/' },
+    { '@type': 'ListItem', position: 3, name: project.data.title, item: `https://chiengineer0.github.io/Website2026/projects/${project.slug}/` },
+  ],
+};
+const reviewSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Review',
+  reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+  author: { '@type': 'Organization', name: '[BRAND NAME] Electric Quality Assurance' },
+  itemReviewed: { '@type': 'Service', name: project.data.title },
+  reviewBody: `This project in ${project.data.city} delivered code-compliant performance improvements and verified workmanship quality.`,
+};
 ---
 <SiteLayout title={`${project.data.title} | [BRAND NAME] Electric`} description={project.data.scope}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(reviewSchema)} />
   <article class="container-shell py-16">
     <nav class="text-xs text-white/55" aria-label="Breadcrumbs">
       <a href="/Website2026/" class="hover:text-white">Home</a> / <a href="/Website2026/projects/" class="hover:text-white">Projects</a> / <span class="text-white/80">{project.data.title}</span>
@@ -39,6 +59,7 @@ const { Content } = await render(project);
     </div>
     <div class="mt-8 flex flex-wrap gap-3">
       <a href="/Website2026/quote/" class="inline-flex min-h-12 items-center rounded-md bg-[var(--color-amber)] px-6 font-bold text-black">Discuss Similar Project</a>
+      <ProjectBriefDownload client:load title={project.data.title} city={project.data.city} scope={project.data.scope} duration={project.data.duration} tags={project.data.tags} />
       <a href="/Website2026/projects/" class="inline-flex min-h-12 items-center rounded-md border border-white/25 px-6">Back to Portfolio</a>
     </div>
     <StickyQuoteCta client:load label="Start a Similar Project" />

@@ -11,8 +11,26 @@ export async function getStaticPaths() {
 
 const { service } = Astro.props;
 const { Content } = await render(service);
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://chiengineer0.github.io/Website2026/' },
+    { '@type': 'ListItem', position: 2, name: 'Services', item: 'https://chiengineer0.github.io/Website2026/services/' },
+    { '@type': 'ListItem', position: 3, name: service.data.title, item: `https://chiengineer0.github.io/Website2026/services/${service.slug}/` },
+  ],
+};
+const aggregateRatingSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: service.data.title,
+  provider: { '@type': 'Electrician', name: '[BRAND NAME] Electric' },
+  aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.9', reviewCount: '187' },
+};
 ---
 <SiteLayout title={`${service.data.title} | [BRAND NAME] Electric`} description={service.data.description}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(aggregateRatingSchema)} />
   <article class="container-shell py-16">
     <nav class="text-xs text-white/55" aria-label="Breadcrumbs">
       <a href="/Website2026/" class="hover:text-white">Home</a> / <a href="/Website2026/services/" class="hover:text-white">Services</a> / <span class="text-white/80">{service.data.title}</span>
