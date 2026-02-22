@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import SiteLayout from '@/layouts/SiteLayout.astro';
 import { formatReadTime } from '@/lib/utils';
+import { StickyQuoteCta } from '@/components/islands/StickyQuoteCta';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -36,4 +37,5 @@ const words = (remarkPluginFrontmatter?.words as number | undefined) ?? 500;
       ))}
     </div>
   </section>
+  <StickyQuoteCta client:load label="Get a Professional Estimate" />
 </SiteLayout>

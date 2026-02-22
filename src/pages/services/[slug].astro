@@ -1,6 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import SiteLayout from '@/layouts/SiteLayout.astro';
+import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
+import { StickyQuoteCta } from '@/components/islands/StickyQuoteCta';
 
 export async function getStaticPaths() {
   const services = await getCollection('services');
@@ -25,9 +27,13 @@ const { Content } = await render(service);
     <div class="prose prose-invert mt-8 max-w-none">
       <Content />
     </div>
+    <div class="mt-8">
+      <TrustBadgeStrip />
+    </div>
     <div class="mt-8 flex flex-wrap gap-3">
       <a href="/Website2026/quote/" class="inline-flex min-h-12 items-center rounded-md bg-[var(--color-amber)] px-6 font-bold text-black">Request This Service</a>
       <a href="tel:+15551239876" class="inline-flex min-h-12 items-center rounded-md border border-red-300/50 px-6 font-semibold text-red-200">Emergency Call</a>
     </div>
+    <StickyQuoteCta client:load label="Book This Service" />
   </article>
 </SiteLayout>

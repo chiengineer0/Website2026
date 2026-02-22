@@ -1,0 +1,18 @@
+---
+const badges = [
+  'Licensed & Bonded',
+  '$2M Liability Coverage',
+  'NECA Member',
+  'Tesla Certified Installer',
+  'Generac Authorized',
+  'Permit & Inspection Managed',
+  'Workmanship Warranty',
+  '24/7 Emergency Dispatch',
+];
+---
+<div class="surface-card p-4">
+  <p class="text-xs uppercase tracking-[0.14em] text-white/55">Why Clients Choose [BRAND NAME] Electric</p>
+  <div class="mt-3 flex flex-wrap gap-2">
+    {badges.map((badge) => <span class="rounded-full border border-white/20 px-3 py-1 text-xs text-white/80">{badge}</span>)}
+  </div>
+</div>
