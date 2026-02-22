@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { db } from '@/lib/db';
+import { trackEvent } from '@/lib/analytics';
 import { quoteSchema, type QuoteFormData } from '@/lib/quote-schema';
 
 const initialData: Partial<QuoteFormData> = {
@@ -17,6 +18,7 @@ export function QuoteEstimator() {
   const [step, setStep] = useState(0);
   const [data, setData] = useState<Partial<QuoteFormData>>(initialData);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   useEffect(() => {
     const raw = localStorage.getItem('quote-draft');
@@ -68,34 +70,45 @@ export function QuoteEstimator() {
     setData(initialData);
     setStep(0);
     setErrorMessage('');
+    trackEvent('quote_draft_cleared');
   }
 
   async function exportPdf() {
-    const { jsPDF } = await import('jspdf');
-    const document = new jsPDF();
-    const lines = [
-      '[BRAND NAME] Electric - Quote Summary',
-      `Date: ${new Date().toLocaleString()}`,
-      '',
-      `Project Type: ${data.jobType ?? '-'}`,
-      `Service: ${data.serviceCategory ?? '-'}`,
-      `Property Size: ${data.propertySize ?? '-'} sq ft`,
-      `Urgency: ${data.urgency ? 'Expedited' : 'Standard'}`,
-      `Estimated Range: ${estimate}`,
-      `Lead Priority: ${priorityTier} (${leadScore}/100)`,
-      '',
-      `Client: ${data.name ?? '-'}`,
-      `Phone: ${data.phone ?? '-'}`,
-      `Email: ${data.email ?? '-'}`,
-      `Address: ${data.address ?? '-'}`,
-    ];
+    if (isExportingPdf) return;
+    setIsExportingPdf(true);
+    try {
+      const { jsPDF } = await import('jspdf');
+      const document = new jsPDF();
+      const lines = [
+        '[BRAND NAME] Electric - Quote Summary',
+        `Date: ${new Date().toLocaleString()}`,
+        '',
+        `Project Type: ${data.jobType ?? '-'}`,
+        `Service: ${data.serviceCategory ?? '-'}`,
+        `Property Size: ${data.propertySize ?? '-'} sq ft`,
+        `Urgency: ${data.urgency ? 'Expedited' : 'Standard'}`,
+        `Estimated Range: ${estimate}`,
+        `Lead Priority: ${priorityTier} (${leadScore}/100)`,
+        '',
+        `Client: ${data.name ?? '-'}`,
+        `Phone: ${data.phone ?? '-'}`,
+        `Email: ${data.email ?? '-'}`,
+        `Address: ${data.address ?? '-'}`,
+      ];
 
-    let y = 20;
-    for (const line of lines) {
-      document.text(line, 14, y);
-      y += 8;
+      let y = 20;
+      for (const line of lines) {
+        document.text(line, 14, y);
+        y += 8;
+      }
+      document.save('brand-electric-quote-summary.pdf');
+      trackEvent('quote_pdf_downloaded', { leadScore, priorityTier });
+    } catch {
+      setErrorMessage('Unable to generate PDF right now. Please retry in a moment.');
+      trackEvent('quote_pdf_download_failed');
+    } finally {
+      setIsExportingPdf(false);
     }
-    document.save('brand-electric-quote-summary.pdf');
   }
 
   return (
@@ -174,12 +187,19 @@ export function QuoteEstimator() {
               <p><strong>Lead Priority Score:</strong> {leadScore}/100 · {priorityTier}</p>
               <p className="mt-1 text-white/70">{recommendation}</p>
             </div>
-            <form action="https://formspree.io/f/mzzvgjov" method="POST" className="mt-6">
+            <form
+              action="https://formspree.io/f/mzzvgjov"
+              method="POST"
+              className="mt-6"
+              onSubmit={() => {
+                trackEvent('quote_form_submitted', { leadScore, priorityTier, urgency: data.urgency ?? false });
+              }}
+            >
               <input type="hidden" name="payload" value={JSON.stringify(data)} />
               <input type="hidden" name="leadScore" value={String(leadScore)} />
               <input type="hidden" name="priorityTier" value={priorityTier} />
               <button type="submit" className="pulse-amber min-h-12 rounded-md bg-[var(--color-amber)] px-6 font-semibold text-black">Submit Request</button>
-              <button type="button" onClick={exportPdf} className="ml-3 min-h-12 rounded-md border border-white/25 px-6">Download PDF</button>
+              <button type="button" disabled={isExportingPdf} onClick={exportPdf} className="ml-3 min-h-12 rounded-md border border-white/25 px-6 disabled:opacity-50">{isExportingPdf ? 'Generating PDF...' : 'Download PDF'}</button>
             </form>
           </div>
         )}
@@ -197,9 +217,11 @@ export function QuoteEstimator() {
               const parsed = quoteSchema.safeParse(data);
               if (!parsed.success) {
                 setErrorMessage('Please complete all contact fields with valid details before continuing.');
+                trackEvent('quote_step_validation_failed', { step: 4 });
                 return;
               }
             }
+            trackEvent('quote_step_advanced', { fromStep: step + 1, toStep: Math.min(5, step + 2) });
             setStep((value) => Math.min(4, value + 1));
           }}
         >

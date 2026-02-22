@@ -8,6 +8,20 @@ interface DataLayerEvent {
   timestamp: string;
 }
 
+const MAX_EVENT_HISTORY = 80;
+
+function readStoredEvents(): DataLayerEvent[] {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const existing = localStorage.getItem('analytics-events');
+    return existing ? (JSON.parse(existing) as DataLayerEvent[]) : [];
+  } catch {
+    localStorage.removeItem('analytics-events');
+    return [];
+  }
+}
+
 declare global {
   interface Window {
     dataLayer?: DataLayerEvent[];
@@ -26,8 +40,7 @@ export function trackEvent(event: string, payload?: AnalyticsPayload) {
   window.dataLayer = window.dataLayer ?? [];
   window.dataLayer.push(record);
 
-  const existing = localStorage.getItem('analytics-events');
-  const list: DataLayerEvent[] = existing ? (JSON.parse(existing) as DataLayerEvent[]) : [];
+  const list = readStoredEvents();
   list.push(record);
-  localStorage.setItem('analytics-events', JSON.stringify(list.slice(-80)));
+  localStorage.setItem('analytics-events', JSON.stringify(list.slice(-MAX_EVENT_HISTORY)));
 }

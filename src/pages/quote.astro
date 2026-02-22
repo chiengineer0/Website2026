@@ -1,6 +1,7 @@
 ---
 import SiteLayout from '@/layouts/SiteLayout.astro';
 import { QuoteEstimator } from '@/components/islands/QuoteEstimator';
+import { QuoteSessionInsights } from '@/components/islands/QuoteSessionInsights';
 ---
 <SiteLayout title="Quote Estimator | [BRAND NAME] Electric" description="Interactive multi-step estimator for electrical projects.">
   <section class="container-shell py-16">
@@ -12,5 +13,6 @@ import { QuoteEstimator } from '@/components/islands/QuoteEstimator';
       <span class="rounded-full border border-white/20 px-3 py-1">Transparent scope + timeline</span>
     </div>
     <div class="mt-8"><QuoteEstimator client:load /></div>
+    <QuoteSessionInsights client:load />
   </section>
 </SiteLayout>

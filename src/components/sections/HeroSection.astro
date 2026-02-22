@@ -2,6 +2,7 @@
 import { HeroTypewriter } from '@/components/islands/HeroTypewriter';
 import { SparkCanvas } from '@/components/islands/SparkCanvas';
 import { SmartPrimaryCta } from '@/components/islands/SmartPrimaryCta';
+import { TrackableCtaLink } from '@/components/islands/TrackableCtaLink';
 import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
 ---
 <section class="relative flex min-h-screen items-center overflow-hidden">
@@ -31,7 +32,13 @@ import TrustBadgeStrip from '@/components/sections/TrustBadgeStrip.astro';
     <p class="mt-5 max-w-2xl text-lg text-white/88">Bold electrical craftsmanship for estates, campuses, retail centers, and mission-critical facilities. Precision planning, immaculate execution, and guaranteed code compliance.</p>
     <div class="mt-8 flex flex-wrap gap-3">
       <SmartPrimaryCta client:load />
-      <a href="/Website2026/projects/" class="glow-hover inline-flex min-h-12 items-center rounded-md border border-white/35 px-6 font-semibold text-white">Our Work</a>
+      <TrackableCtaLink
+        client:load
+        href="/Website2026/projects/"
+        label="Our Work"
+        eventName="hero_secondary_cta_click"
+        className="glow-hover inline-flex min-h-12 items-center rounded-md border border-white/35 px-6 font-semibold text-white"
+      />
     </div>
     <div class="mt-6 flex flex-wrap gap-2 text-xs text-white/75">
       <span class="rounded-full border border-white/20 px-3 py-1">500+ Completed Projects</span>
