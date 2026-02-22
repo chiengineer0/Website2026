@@ -59,9 +59,9 @@ const reviewSchema = {
     </div>
     <div class="mt-8 flex flex-wrap gap-3">
       <a href="/Website2026/quote/" class="inline-flex min-h-12 items-center rounded-md bg-[var(--color-amber)] px-6 font-bold text-black">Discuss Similar Project</a>
-      <ProjectBriefDownload client:load title={project.data.title} city={project.data.city} scope={project.data.scope} duration={project.data.duration} tags={project.data.tags} />
+      <ProjectBriefDownload client:visible title={project.data.title} city={project.data.city} scope={project.data.scope} duration={project.data.duration} tags={project.data.tags} />
       <a href="/Website2026/projects/" class="inline-flex min-h-12 items-center rounded-md border border-white/25 px-6">Back to Portfolio</a>
     </div>
-    <StickyQuoteCta client:load label="Start a Similar Project" />
+    <StickyQuoteCta client:idle label="Start a Similar Project" />
   </article>
 </SiteLayout>

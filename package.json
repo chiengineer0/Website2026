@@ -32,7 +32,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dexie": "^4.3.0",
-    "jspdf": "^4.2.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.575.0",
     "motion": "^12.34.3",

@@ -56,8 +56,8 @@ const businessSchema = {
     </main>
     <Footer />
     <MobileBottomNav />
-    <EmergencyFab client:load />
-    <InstallPromptBanner client:load />
+    <EmergencyFab client:idle />
+    <InstallPromptBanner client:idle />
     <script is:inline>
       const revealTargets = () => {
         const observer = new IntersectionObserver((entries) => {

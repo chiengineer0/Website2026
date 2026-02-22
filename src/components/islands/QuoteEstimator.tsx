@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { db } from '@/lib/db';
 import { trackEvent } from '@/lib/analytics';
 import { quoteSchema, type QuoteFormData } from '@/lib/quote-schema';
@@ -14,15 +14,40 @@ const initialData: Partial<QuoteFormData> = {
 
 const steps = ['Project Type', 'Service', 'Property', 'Contact', 'Summary'] as const;
 
+function escapeHtml(value: string) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
 export function QuoteEstimator() {
   const [step, setStep] = useState(0);
   const [data, setData] = useState<Partial<QuoteFormData>>(initialData);
   const [errorMessage, setErrorMessage] = useState('');
   const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const sessionStartRef = useRef(0);
+  const stepStartRef = useRef(0);
+  const summaryViewTrackedRef = useRef(false);
 
   useEffect(() => {
-    const raw = localStorage.getItem('quote-draft');
-    if (raw) setData(JSON.parse(raw) as Partial<QuoteFormData>);
+    sessionStartRef.current = performance.now();
+    stepStartRef.current = performance.now();
+
+    let restoredDraft = false;
+    try {
+      const raw = localStorage.getItem('quote-draft');
+      if (raw) {
+        setData(JSON.parse(raw) as Partial<QuoteFormData>);
+        restoredDraft = true;
+      }
+    } catch {
+      localStorage.removeItem('quote-draft');
+    }
+
+    trackEvent('quote_estimator_loaded', { restoredDraft });
   }, []);
 
   useEffect(() => {
@@ -63,6 +88,14 @@ export function QuoteEstimator() {
     return 'Provide photos of your panel and project area to accelerate final estimate turnaround.';
   }, [data]);
 
+  useEffect(() => {
+    if (step !== 4 || summaryViewTrackedRef.current) return;
+
+    const elapsedMs = Math.round(performance.now() - sessionStartRef.current);
+    trackEvent('quote_summary_viewed', { elapsedMs, leadScore, priorityTier });
+    summaryViewTrackedRef.current = true;
+  }, [step, leadScore, priorityTier]);
+
   const completion = ((step + 1) / steps.length) * 100;
 
   function clearDraft() {
@@ -70,39 +103,70 @@ export function QuoteEstimator() {
     setData(initialData);
     setStep(0);
     setErrorMessage('');
+    stepStartRef.current = performance.now();
+    summaryViewTrackedRef.current = false;
     trackEvent('quote_draft_cleared');
   }
 
-  async function exportPdf() {
+  function exportPdf() {
     if (isExportingPdf) return;
     setIsExportingPdf(true);
+    const exportStart = performance.now();
+
     try {
-      const { jsPDF } = await import('jspdf');
-      const document = new jsPDF();
-      const lines = [
-        '[BRAND NAME] Electric - Quote Summary',
-        `Date: ${new Date().toLocaleString()}`,
-        '',
-        `Project Type: ${data.jobType ?? '-'}`,
-        `Service: ${data.serviceCategory ?? '-'}`,
-        `Property Size: ${data.propertySize ?? '-'} sq ft`,
-        `Urgency: ${data.urgency ? 'Expedited' : 'Standard'}`,
-        `Estimated Range: ${estimate}`,
-        `Lead Priority: ${priorityTier} (${leadScore}/100)`,
-        '',
-        `Client: ${data.name ?? '-'}`,
-        `Phone: ${data.phone ?? '-'}`,
-        `Email: ${data.email ?? '-'}`,
-        `Address: ${data.address ?? '-'}`,
+      const printWindow = window.open('', '_blank', 'noopener,noreferrer');
+      if (!printWindow) {
+        setErrorMessage('Unable to open print preview. Please allow popups for this site.');
+        trackEvent('quote_pdf_download_failed', { reason: 'popup_blocked' });
+        return;
+      }
+
+      const generatedAt = new Date().toLocaleString();
+      const summaryRows = [
+        ['Project Type', data.jobType ?? '-'],
+        ['Service', data.serviceCategory ?? '-'],
+        ['Property Size', `${data.propertySize ?? '-'} sq ft`],
+        ['Urgency', data.urgency ? 'Expedited' : 'Standard'],
+        ['Estimated Range', estimate],
+        ['Lead Priority', `${priorityTier} (${leadScore}/100)`],
+        ['Client', data.name ?? '-'],
+        ['Phone', data.phone ?? '-'],
+        ['Email', data.email ?? '-'],
+        ['Address', data.address ?? '-'],
       ];
 
-      let y = 20;
-      for (const line of lines) {
-        document.text(line, 14, y);
-        y += 8;
-      }
-      document.save('brand-electric-quote-summary.pdf');
-      trackEvent('quote_pdf_downloaded', { leadScore, priorityTier });
+      const rows = summaryRows
+        .map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`)
+        .join('');
+
+      printWindow.document.write(`<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Quote Summary</title>
+    <style>
+      body { font-family: Inter, Arial, sans-serif; margin: 24px; color: #111827; }
+      h1 { margin: 0 0 4px; font-size: 22px; }
+      p { margin: 0 0 16px; color: #4b5563; }
+      table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+      th, td { text-align: left; border: 1px solid #e5e7eb; padding: 10px; vertical-align: top; }
+      th { width: 220px; background: #f9fafb; font-weight: 600; }
+      .footer { margin-top: 16px; font-size: 12px; color: #6b7280; }
+    </style>
+  </head>
+  <body>
+    <h1>[BRAND NAME] Electric - Quote Summary</h1>
+    <p>Generated ${escapeHtml(generatedAt)}</p>
+    <table>${rows}</table>
+    <p class="footer">Print this page and choose “Save as PDF” in the print dialog if you need a PDF file.</p>
+  </body>
+</html>`);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+
+      const generationMs = Math.round(performance.now() - exportStart);
+      trackEvent('quote_pdf_downloaded', { leadScore, priorityTier, generationMs, method: 'browser_print' });
     } catch {
       setErrorMessage('Unable to generate PDF right now. Please retry in a moment.');
       trackEvent('quote_pdf_download_failed');
@@ -206,7 +270,19 @@ export function QuoteEstimator() {
       </motion.div>
 
       <div className="mt-6 flex gap-3">
-        <button type="button" disabled={step === 0} className="min-h-12 rounded-md border border-white/25 px-4 disabled:opacity-50" onClick={() => setStep((value) => Math.max(0, value - 1))}>Back</button>
+        <button
+          type="button"
+          disabled={step === 0}
+          className="min-h-12 rounded-md border border-white/25 px-4 disabled:opacity-50"
+          onClick={() => {
+            const dwellMs = Math.round(performance.now() - stepStartRef.current);
+            trackEvent('quote_step_reversed', { fromStep: step + 1, toStep: Math.max(1, step), dwellMs });
+            stepStartRef.current = performance.now();
+            setStep((value) => Math.max(0, value - 1));
+          }}
+        >
+          Back
+        </button>
         <button
           type="button"
           disabled={step === 4}
@@ -221,7 +297,10 @@ export function QuoteEstimator() {
                 return;
               }
             }
-            trackEvent('quote_step_advanced', { fromStep: step + 1, toStep: Math.min(5, step + 2) });
+            const nextStep = Math.min(4, step + 1);
+            const dwellMs = Math.round(performance.now() - stepStartRef.current);
+            trackEvent('quote_step_advanced', { fromStep: step + 1, toStep: nextStep + 1, dwellMs });
+            stepStartRef.current = performance.now();
             setStep((value) => Math.min(4, value + 1));
           }}
         >

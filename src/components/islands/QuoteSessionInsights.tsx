@@ -4,6 +4,10 @@ import { db, type QuoteDraft } from '@/lib/db';
 interface AnalyticsEvent {
   event: string;
   timestamp: string;
+  payload?: {
+    elapsedMs?: number;
+    dwellMs?: number;
+  };
 }
 
 function readAnalyticsEvents(): AnalyticsEvent[] {
@@ -32,6 +36,23 @@ export function QuoteSessionInsights() {
       map.set(event.event, (map.get(event.event) ?? 0) + 1);
     }
     return Array.from(map.entries()).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  }, [events]);
+
+  const summaryTiming = useMemo(() => {
+    const latest = [...events].reverse().find((event) => event.event === 'quote_summary_viewed');
+    if (!latest?.payload?.elapsedMs) return null;
+    return Math.round(latest.payload.elapsedMs / 1000);
+  }, [events]);
+
+  const averageStepDwell = useMemo(() => {
+    const dwellValues = events
+      .filter((event) => event.event === 'quote_step_advanced' || event.event === 'quote_step_reversed')
+      .map((event) => event.payload?.dwellMs)
+      .filter((value): value is number => typeof value === 'number' && value > 0);
+
+    if (dwellValues.length === 0) return null;
+    const averageMs = dwellValues.reduce((total, value) => total + value, 0) / dwellValues.length;
+    return Math.round(averageMs / 1000);
   }, [events]);
 
   return (
@@ -79,6 +100,17 @@ export function QuoteSessionInsights() {
           ) : (
             <p className="mt-2 text-sm text-white/65">No interaction events captured yet.</p>
           )}
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-md border border-white/15 bg-black/25 p-3 text-sm text-white/80">
+          <p className="text-xs uppercase tracking-wide text-white/55">Time To Summary</p>
+          <p className="mt-1 text-lg font-semibold">{summaryTiming ? `${summaryTiming}s` : '—'}</p>
+        </div>
+        <div className="rounded-md border border-white/15 bg-black/25 p-3 text-sm text-white/80">
+          <p className="text-xs uppercase tracking-wide text-white/55">Avg Step Dwell</p>
+          <p className="mt-1 text-lg font-semibold">{averageStepDwell ? `${averageStepDwell}s` : '—'}</p>
         </div>
       </div>
 
