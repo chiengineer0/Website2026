@@ -5,7 +5,7 @@ import { formatReadTime } from '@/lib/utils';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  return posts.map((post) => ({ params: { slug: post.data.slug }, props: { post, allPosts: posts } }));
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post, allPosts: posts } }));
 }
 
 const { post, allPosts } = Astro.props;
@@ -24,7 +24,7 @@ const words = (remarkPluginFrontmatter?.words as number | undefined) ?? 500;
     <h2 class="text-2xl font-bold">Related Posts</h2>
     <div class="mt-4 grid gap-4 md:grid-cols-3">
       {related.map((entry: typeof post) => (
-        <a href={`/Website2026/blog/${entry.data.slug}/`} class="rounded-xl border border-white/15 bg-white/5 p-4">
+        <a href={`/Website2026/blog/${entry.slug}/`} class="rounded-xl border border-white/15 bg-white/5 p-4">
           <h3 class="font-semibold">{entry.data.title}</h3>
           <p class="mt-2 text-sm text-white/70">{entry.data.excerpt}</p>
         </a>

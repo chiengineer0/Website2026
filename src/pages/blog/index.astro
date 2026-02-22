@@ -16,7 +16,7 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.publishDate.va
           <div class="mt-4 flex flex-wrap gap-2">
             {post.data.tags.map((tag) => <span class="rounded-full border border-white/20 px-2 py-1 text-xs">{tag}</span>)}
           </div>
-          <a href={`/Website2026/blog/${post.data.slug}/`} class="mt-4 inline-block text-[var(--color-electric)]">Read article →</a>
+          <a href={`/Website2026/blog/${post.slug}/`} class="mt-4 inline-block text-[var(--color-electric)]">Read article →</a>
         </article>
       ))}
     </div>

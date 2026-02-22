@@ -1,5 +1,7 @@
 ---
-import '@fontsource/inter/variable.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
 import '@fontsource-variable/geist';
 import '@/styles/global.css';
 import Header from '@/components/layout/Header.astro';
@@ -40,7 +42,7 @@ const businessSchema = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary_large_image" />
-    <script type="application/ld+json" set:html={JSON.stringify(businessSchema)}></script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(businessSchema)}></script>
     <ClientRouter />
   </head>
   <body class="mobile-bottom-safe">

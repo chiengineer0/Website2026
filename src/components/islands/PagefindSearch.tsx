@@ -31,7 +31,8 @@ export function PagefindSearch() {
     }
     const timer = window.setTimeout(async () => {
       try {
-        const module = await import('/Website2026/pagefind/pagefind.js');
+        const modulePath = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
+        const module = await import(/* @vite-ignore */ modulePath);
         const pagefind = await module.options({ excerptLength: 18 });
         const search = await pagefind.search(query);
         const loaded = await Promise.all(search.results.slice(0, 8).map((item: any) => item.data()));

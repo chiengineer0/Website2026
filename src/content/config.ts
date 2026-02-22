@@ -4,7 +4,6 @@ const services = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    slug: z.string(),
     description: z.string(),
     icon: z.string(),
     timeline: z.string(),
@@ -20,7 +19,6 @@ const projects = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    slug: z.string(),
     city: z.string(),
     scope: z.string(),
     duration: z.string(),
@@ -37,7 +35,6 @@ const blog = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    slug: z.string(),
     excerpt: z.string(),
     author: z.string(),
     tags: z.array(z.string()),

@@ -33,7 +33,7 @@ body {
 
 @media (pointer: fine) {
   body {
-    cursor: url('/Website2026/cursor-bolt.svg') 8 2, auto;
+    cursor: url('/cursor-bolt.svg') 8 2, auto;
   }
 }
 

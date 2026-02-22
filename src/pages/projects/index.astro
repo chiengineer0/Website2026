@@ -21,7 +21,7 @@ const filtered = selectedCategory ? projects.filter((project) => project.data.ca
           <h2 class="mt-3 font-semibold">{project.data.title}</h2>
           <p class="text-sm text-white/70">{project.data.city} · {project.data.scope}</p>
           <div class="mt-3 flex items-center justify-between">
-            <a href={`/Website2026/projects/${project.data.slug}/`} class="text-sm text-[var(--color-electric)]">View case study</a>
+            <a href={`/Website2026/projects/${project.slug}/`} class="text-sm text-[var(--color-electric)]">View case study</a>
             <ProjectLightbox client:idle images={[{ src: project.data.beforeImage, alt: `Before ${project.data.title}` }, { src: project.data.afterImage, alt: `After ${project.data.title}` }]} />
           </div>
         </article>

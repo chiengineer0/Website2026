@@ -4,7 +4,7 @@ import SiteLayout from '@/layouts/SiteLayout.astro';
 
 export async function getStaticPaths() {
   const services = await getCollection('services');
-  return services.map((service) => ({ params: { slug: service.data.slug }, props: { service } }));
+  return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
 }
 
 const { service } = Astro.props;

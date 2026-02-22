@@ -13,7 +13,7 @@ const services = await getCollection('services');
           <h2 class="text-xl font-semibold">{service.data.title}</h2>
           <p class="mt-2 text-white/80">{service.data.description}</p>
           <p class="mt-3 text-sm text-[var(--color-amber)]">{service.data.timeline} · {service.data.startingPrice}</p>
-          <a href={`/Website2026/services/${service.data.slug}/`} class="mt-4 inline-block min-h-12 text-[var(--color-electric)]">Learn More →</a>
+          <a href={`/Website2026/services/${service.slug}/`} class="mt-4 inline-block min-h-12 text-[var(--color-electric)]">Learn More →</a>
         </article>
       ))}
     </div>
