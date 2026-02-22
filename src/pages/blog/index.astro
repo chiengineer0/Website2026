@@ -3,12 +3,28 @@ import { getCollection } from 'astro:content';
 import SiteLayout from '@/layouts/SiteLayout.astro';
 
 const posts = (await getCollection('blog')).sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+const tags = ['All', ...new Set(posts.flatMap((post) => post.data.tags))];
+const selectedTag = Astro.url.searchParams.get('tag') ?? 'All';
+const filteredPosts = selectedTag === 'All' ? posts : posts.filter((post) => post.data.tags.includes(selectedTag));
 ---
 <SiteLayout title="Electrical Insights Blog | [BRAND NAME] Electric" description="Electrical safety, code updates, EV charging guidance, and project stories.">
   <section class="container-shell py-16">
     <h1 class="section-title font-black">Electrical Insights</h1>
+    <div class="mt-5 flex flex-wrap gap-2">
+      {tags.map((tag) => (
+        <a
+          href={tag === 'All' ? '/Website2026/blog/' : `/Website2026/blog/?tag=${encodeURIComponent(tag)}`}
+          class:list={[
+            'min-h-12 rounded-full border px-4 py-2 text-sm transition',
+            selectedTag === tag ? 'border-[var(--color-electric)] bg-[var(--color-electric)]/15 text-white' : 'border-white/20 text-white/80 hover:border-[var(--color-electric)]',
+          ]}
+        >
+          {tag}
+        </a>
+      ))}
+    </div>
     <div class="mt-8 grid gap-4 md:grid-cols-2">
-      {posts.map((post) => (
+      {filteredPosts.map((post) => (
         <article class="surface-card p-5">
           <p class="text-xs text-white/60">{post.data.publishDate.toLocaleDateString()}</p>
           <h2 class="mt-2 text-xl font-semibold">{post.data.title}</h2>
@@ -20,5 +36,6 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.publishDate.va
         </article>
       ))}
     </div>
+    {filteredPosts.length === 0 ? <p class="mt-6 text-sm text-white/60">No posts found for this topic yet. Try another tag.</p> : null}
   </section>
 </SiteLayout>

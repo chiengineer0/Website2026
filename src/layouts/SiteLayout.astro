@@ -9,6 +9,8 @@ import Footer from '@/components/layout/Footer.astro';
 import MobileBottomNav from '@/components/layout/MobileBottomNav.astro';
 import { EmergencyFab } from '@/components/islands/EmergencyFab';
 import { PagefindSearch } from '@/components/islands/PagefindSearch';
+import { InstallPromptBanner } from '@/components/islands/InstallPromptBanner';
+import { LoadingScreen } from '@/components/islands/LoadingScreen';
 import { ClientRouter } from 'astro:transitions';
 
 interface Props {
@@ -46,14 +48,16 @@ const businessSchema = {
     <ClientRouter />
   </head>
   <body class="mobile-bottom-safe">
+    <LoadingScreen client:load />
     <Header />
     <PagefindSearch client:load />
-    <main>
+    <main data-pagefind-body>
       <slot />
     </main>
     <Footer />
     <MobileBottomNav />
     <EmergencyFab client:load />
+    <InstallPromptBanner client:load />
     <script is:inline>
       const revealTargets = () => {
         const observer = new IntersectionObserver((entries) => {
