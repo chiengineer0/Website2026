@@ -47,15 +47,15 @@ const businessSchema = {
     <ClientRouter />
   </head>
   <body class="mobile-bottom-safe">
-    <LoadingScreen client:load />
+    <LoadingScreen client:only="react" />
     <Header />
     <main data-pagefind-body>
       <slot />
     </main>
     <Footer />
     <MobileBottomNav />
-    <EmergencyFab client:idle />
-    <InstallPromptBanner client:idle />
+    <EmergencyFab client:only="react" />
+    <InstallPromptBanner client:only="react" />
     <script is:inline>
       const revealTargets = () => {
         const observer = new IntersectionObserver((entries) => {

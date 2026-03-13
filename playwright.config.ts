@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: true,
   use: {
-    baseURL: 'http://127.0.0.1:4321',
+    baseURL: 'http://127.0.0.1:4321/Website2026',
     trace: 'on-first-retry',
   },
   projects: [
@@ -13,7 +13,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run dev -- --host 127.0.0.1 --port 4321',
-    url: 'http://127.0.0.1:4321',
+    url: 'http://127.0.0.1:4321/Website2026/',
     reuseExistingServer: true,
   },
 });
